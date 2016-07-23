@@ -1,0 +1,835 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML
+><HEAD
+><TITLE
+>The Cabal simple build infrastructure</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.7"><LINK
+REL="HOME"
+TITLE="The Haskell Cabal"
+HREF="index.html"><LINK
+REL="PREVIOUS"
+TITLE="The setup script"
+HREF="x444.html"><LINK
+REL="NEXT"
+TITLE="Layered Tools"
+HREF="a818.html"></HEAD
+><BODY
+CLASS="SECT1"
+BGCOLOR="#FFFFFF"
+TEXT="#000000"
+LINK="#0000FF"
+VLINK="#840084"
+ALINK="#0000FF"
+><DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="3"
+ALIGN="center"
+>The Haskell Cabal: A Common Architecture for Building Applications and Tools</TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="bottom"
+><A
+HREF="x444.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="80%"
+ALIGN="center"
+VALIGN="bottom"
+></TD
+><TD
+WIDTH="10%"
+ALIGN="right"
+VALIGN="bottom"
+><A
+HREF="a818.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="SECT1"
+><H1
+CLASS="SECT1"
+><A
+NAME="SBI"
+>5. The <SPAN
+CLASS="APPLICATION"
+>Cabal</SPAN
+> simple build infrastructure</A
+></H1
+><P
+>A package author must fulfil the specification of <A
+HREF="x444.html"
+>Section 4</A
+>.
+In many cases, a Haskell package will consist of nothing more than a bunch of Haskell modules,
+with perhaps the odd C file.  In that case, the <SPAN
+CLASS="APPLICATION"
+>Cabal</SPAN
+> provides a <SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>simple build infrastructure</I
+></SPAN
+> that
+fulfils the specification of <A
+HREF="x444.html"
+>Section 4</A
+>, and provides some modest further facilities besides.</P
+><P
+>This simple build infrastructure is meant to automate the common case.
+(Think <B
+CLASS="COMMAND"
+>hmake</B
+>.)  The emphasis is on ``simple'': 
+if you want something more elaborate, you can (a) modify the simple build infrastructure (which is written in Haskell)
+(b) use makefiles, or (c) implement something else entirely.</P
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="AEN621"
+>5.1. Overview</A
+></H2
+><P
+>The simple build infrastructure works as follows.  First, Angela puts the following Haskell 
+file <TT
+CLASS="FILENAME"
+>Setup.lhs</TT
+> in the
+root of her tree:
+<PRE
+CLASS="PROGRAMLISTING"
+>  #! /usr/bin/env runghc
+
+  &#62; import Distribution.Simple</PRE
+>
+Second, she writes a package description <TT
+CLASS="FILENAME"
+>Setup.description</TT
+> in the syntax of <A
+HREF="x611.html#SBI-PKG-DESC"
+>Section 5.2</A
+>,
+which describes the package and gives extra information to the simple build infrastructure.</P
+><P
+>Now Angela can build her package by saying
+<PRE
+CLASS="PROGRAMLISTING"
+>  ./Setup.lhs configure
+  ./Setup.lhs build</PRE
+>
+She can even install it on her own machine by saying
+<PRE
+CLASS="PROGRAMLISTING"
+>  ./Setup.lhs install</PRE
+>
+She can build a <SPAN
+CLASS="APPLICATION"
+>Cabal</SPAN
+> source distribution:
+<PRE
+CLASS="PROGRAMLISTING"
+>  ./Setup.lhs source-dist</PRE
+>
+The full details are given in <A
+HREF="x611.html#SBI-SETUP"
+>Section 5.3</A
+>.  </P
+><P
+>It is no coincidence that the interface is very similar to that for the setup script
+for an <SPAN
+CLASS="APPLICATION"
+>Cabal</SPAN
+> package distribution (<A
+HREF="x444.html"
+>Section 4</A
+>).
+In fact, <VAR
+CLASS="LITERAL"
+>Distribution.Simple.defaultMain</VAR
+> conforms to the specification of <A
+HREF="x444.html#SETUP-SPEC"
+>Section 4.2</A
+>, and when it builds
+a distribution, it includes <TT
+CLASS="FILENAME"
+>./Setup.lhs</TT
+> in the tarball, ready to be run by Bob the Builder.
+However, <VAR
+CLASS="LITERAL"
+>Distribution.Simple.defaultMain</VAR
+> of course implements a richer interface than that required by
+<A
+HREF="x444.html#SETUP-SPEC"
+>Section 4.2</A
+>, because it's intended to support Angela as well as Bob.
+The full specification is in <A
+HREF="x611.html#SBI-SETUP"
+>Section 5.3</A
+>.</P
+></DIV
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="SBI-PKG-DESC"
+>5.2. Package description in the simple build infrastructure</A
+></H2
+><P
+>When using the simple build infrastructure, the package
+description file <TT
+CLASS="FILENAME"
+>Setup.description</TT
+> contains not only the name of the package,
+its version and dependencies, but also a collection of information to
+explain to the simple build infrastructure how to build the package.
+This section gives the specific fields, and the syntax of those
+fields.  For the general syntax of the file, please see <A
+HREF="x444.html#PKG-DESC"
+>Section 4.1</A
+>.</P
+><P
+>Here is a sample package description file with all the fields understood by the simple build infrastructure:
+<PRE
+CLASS="PROGRAMLISTING"
+>        -- Required
+        Name: Cabal
+        Version: 0.1.1.1.1-rain
+        License: LGPL
+        Copyright: Free Text String
+        -- Optional - may be in source?
+        Stability: Free Text String
+        Build-Depends: haskell-src, HUnit&#62;=1.0.0-rain
+        Modules: Distribution.Package, Distribution.Version,
+                 Distribution.Simple.GHCPackageConfig
+        C-Sources: not/even/rain.c, such/small/hands
+        HS-Source-Dir: src
+        Exposed-Modules: Distribution.Void, Foo.Bar
+        Extensions: OverlappingInstances, TypeSynonymInstances
+        Extra-Libs: libfoo, bar, bang
+        Include-Dirs: your/slightest, look/will
+        Includes: /easily/unclose, /me, "funky, path\\name"
+        Options-ghc: -fTH -fglasgow-exts
+        Options-hugs: +TH
+
+        -- Next is an executable
+        Executable: somescript
+        Main-is: SomeFile.hs
+        Modules: Foo1, Util, Main
+        HS-Source-Dir: scripts
+        Extensions: OverlappingInstances</PRE
+>
+The Name, Version, License, and Copyright are compulsory.</P
+><P
+>All other fields, such as dependency-related fields, will be
+considered empty if they are absent.  Any fields that the system does
+not understand will be ignored.</P
+><P
+>Note that in the future, though the Modules field will be
+available, it will not be necessary to provide it for building
+executables and libraries.  Instead, the user will provide only the
+"Main-Is" field (for executables) and the "Exposed-Modules" field (for
+libraries).  The system will chase down dependencies from those
+modules and include them in the library or source
+distributions.</P
+><P
+>The description file fields:
+   <DIV
+CLASS="TABLE"
+><A
+NAME="AEN653"
+></A
+><P
+><B
+>Table 3. Description File Fields</B
+></P
+><TABLE
+BORDER="1"
+FRAME="border"
+RULES="all"
+CLASS="CALSTABLE"
+><COL><COL><COL><COL><TBODY
+><TR
+><TD
+>Field Name</TD
+><TD
+>Description</TD
+><TD
+>Example</TD
+><TD
+>Notes</TD
+></TR
+><TR
+><TD
+>name</TD
+><TD
+>[a-zA-Z][-a-zA-Z0-9]*</TD
+><TD
+>haskell-cabal12345</TD
+><TD
+>&nbsp;</TD
+></TR
+><TR
+><TD
+>version</TD
+><TD
+>[0-9.]+(-?)[-a-zA-Z]*: branch numbers, separated by dots, and optional tags separated by dashes.</TD
+><TD
+>1.2.3.4.5-foo-bar-bang</TD
+><TD
+>&nbsp;</TD
+></TR
+><TR
+><TD
+>copyright</TD
+><TD
+>--FREE TEXT--</TD
+><TD
+>(c) 2004 Isaac Jones</TD
+><TD
+>&nbsp;</TD
+></TR
+><TR
+><TD
+>license</TD
+><TD
+>GPL | LGPL | BSD3 | BSD4 | PublicDomain | AllRightsReserved</TD
+><TD
+>BSD3</TD
+><TD
+>If your license isn't on this list, use the
+           <SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>license-file</I
+></SPAN
+> field.</TD
+></TR
+><TR
+><TD
+>license-file</TD
+><TD
+>--PATH--</TD
+><TD
+>doc/myLicense.txt</TD
+><TD
+>Specify the license you use as a relative path from the root of the source tree.</TD
+></TR
+><TR
+><TD
+>maintainer</TD
+><TD
+>--FREE TEXT--</TD
+><TD
+>T.S. Elliot &lt;elliot@email.com&#62; </TD
+><TD
+>&nbsp;</TD
+></TR
+><TR
+><TD
+>stability</TD
+><TD
+>--FREE TEXT--</TD
+><TD
+>Don't hook this up to your coffee machine</TD
+><TD
+>&nbsp;</TD
+></TR
+><TR
+><TD
+>executable</TD
+><TD
+>--FREE TEXT--</TD
+><TD
+>cpphs</TD
+><TD
+>For this Executable stanza, what is the name of the produced executable.</TD
+></TR
+><TR
+><TD
+>main-is</TD
+><TD
+>--PATH--</TD
+><TD
+>/foo/bar/bang/Baz.hs</TD
+><TD
+>The filename to look for the main module for this Executable stanza.</TD
+></TR
+><TR
+><TD
+>extra-libs</TD
+><TD
+>comma list of --FREE TEXT-- and spaces</TD
+><TD
+>libfoo, libbar  ,   libbang</TD
+><TD
+>for non-haskell libraries that this package needs to link to</TD
+></TR
+><TR
+><TD
+>build-depends</TD
+><TD
+>package name (== | &#60; | &#62; | &#60;= | &#62;=) version</TD
+><TD
+>foo &#62; 1.2, bar &#60; 3.3.5, bang</TD
+><TD
+>If the version isn't listed, it's assumed any version is OK.</TD
+></TR
+><TR
+><TD
+>c-sources</TD
+><TD
+>--PATH--</TD
+><TD
+>/foo/bar/bang</TD
+><TD
+>C source files to build using the FFI.</TD
+></TR
+><TR
+><TD
+>include-dirs</TD
+><TD
+>--PATH--</TD
+><TD
+>"/foo/bar/  ,bang"</TD
+><TD
+>Not Yet Used</TD
+></TR
+><TR
+><TD
+>includes</TD
+><TD
+>--PATH--</TD
+><TD
+>/foo/bar/bang</TD
+><TD
+>Not Yet Used</TD
+></TR
+><TR
+><TD
+>hs-source-dir</TD
+><TD
+>--PATH--</TD
+><TD
+>src</TD
+><TD
+>A relative path from the root of your source tree.  Look here for the Haskell modules.</TD
+></TR
+><TR
+><TD
+>modules</TD
+><TD
+>--MODULE LIST--</TD
+><TD
+>Foo.Bar, Bang.Baz, Boo</TD
+><TD
+>May not be necessary in the future, since we'll
+           chase dependencies from exposed modules and main
+           module.</TD
+></TR
+><TR
+><TD
+>exposed-modules</TD
+><TD
+>--MODULE LIST--</TD
+><TD
+>Foo.Bar, Bang.Baz, Boo</TD
+><TD
+>For a library package, which modules should be
+           available for import by the end user?</TD
+></TR
+><TR
+><TD
+>extensions</TD
+><TD
+>OverlappingInstances
+               | RecursiveDo
+               | ParallelListComp
+               | MultiParamTypeClasses
+               | NoMonomorphismRestriction
+               | FunctionalDependencies
+               | RankNTypes
+               | PolymorphicComponents
+               | ExistentialQuantification
+               | ScopedTypeVariables
+               | ImplicitParams
+               | FlexibleContexts
+               | FlexibleInstances
+               | EmptyDataDecls
+
+	       | TypeSynonymInstances
+	       | TemplateHaskell
+               | ForeignFunctionInterface
+               | AllowOverlappingInstances
+               | AllowUndecidableInstances
+               | AllowIncoherentInstances
+               | InlinePhase
+               | ContextStack
+               | Arrows
+               | Generics
+               | NoImplicitPrelude
+               | NamedFieldPuns
+
+               | ExtensibleRecords
+               | RestrictedTypeSynonyms
+               | HereDocuments
+               | UnsafeOverlappingInstances</TD
+><TD
+>ForeignFunctionInterface, Arrows</TD
+><TD
+>Not all extensions are understood by all Haskell Implementations</TD
+></TR
+><TR
+><TD
+>options-ghc</TD
+><TD
+>--OPTIONS--</TD
+><TD
+>-fth -cpp</TD
+><TD
+>For command-line options not covered under
+           <SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>extensions</I
+></SPAN
+>, add them here, separated
+           by whitespace.</TD
+></TR
+><TR
+><TD
+>options-nhc</TD
+><TD
+>--OPTIONS--</TD
+><TD
+>-P -t</TD
+><TD
+>For command-line options not covered under
+           <SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>extensions</I
+></SPAN
+>, add them here, separated
+           by whitespace.</TD
+></TR
+><TR
+><TD
+>options-hugs</TD
+><TD
+>--OPTIONS--</TD
+><TD
+>-98 +g</TD
+><TD
+>For command-line options not covered under
+           <SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>extensions</I
+></SPAN
+>, add them here, separated
+           by whitespace.</TD
+></TR
+></TBODY
+></TABLE
+></DIV
+></P
+><P
+>Further details on some fields:
+  <P
+></P
+><UL
+><LI
+><P
+><SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>--PATH--</I
+></SPAN
+> Paths are written in
+   the Unix style, with directories separated by slashes, optionally
+   ending in a filename.  There are two kinds of paths supported:
+   "Simple" and "Complex".  "Simple" paths are alpha-numeric values
+   separated by slashes (foo/bar/bang).  More "Complex" paths such as
+   those with spaces or non-alphanumeric characters must be put in
+   quotes ("foo, /bar \//bang").  You should assume that the paths are
+   case sensitive, though in practice this varies depending on the end
+   user's file system.  </P
+></LI
+><LI
+><P
+><SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>--MODULE LIST--</I
+></SPAN
+> A module list
+   is a standard Haskell module name, without any file suffixes (.lhs
+   or .hs).  Each module should be separated by a
+   comma.</P
+></LI
+><LI
+><P
+><SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>--FREE TEXT--</I
+></SPAN
+> You may put
+   anything in these fields.  For multi-line fields, start the
+   subsequent lines with whitespace.</P
+></LI
+><LI
+><P
+><SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>--OPTIONS--</I
+></SPAN
+>The exact syntax of
+   the options field is dependent on the compiler you're using.  Refer
+   to your compiler's man page for details.  Multiple options should
+   be separated by whitespace.</P
+></LI
+></UL
+>&#13;</P
+><P
+>On hidden modules: Hidden modules form part of the
+implementation of the package, but not its interface: a client of the
+package cannot import an internal module.  The system still must
+derive their existence, or they must be listed explicity for two
+reasons: (a) to allow the global program invariant to be checked (see
+<A
+HREF="x138.html#PACKAGES-AND-HASKELL"
+>Section 2.2</A
+>) and (b) to enable a build
+system or programming environment to find the source files.  </P
+></DIV
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="SBI-SETUP"
+>5.3. <VAR
+CLASS="LITERAL"
+>Distribution.Simple</VAR
+></A
+></H2
+><P
+>This section gives the command line interface supported by
+<VAR
+CLASS="LITERAL"
+>Distribution.Simple.defaultMain</VAR
+>.  It supports all the
+commands described in <A
+HREF="x444.html#SETUP-SPEC"
+>Section 4.2</A
+>, (except for "test" -
+FIX) and in addition the following: <DIV
+CLASS="TABLE"
+><A
+NAME="AEN788"
+></A
+><P
+><B
+>Table 4. Extra
+commands supported by the simple build infrastructure setup
+script</B
+></P
+><TABLE
+BORDER="1"
+FRAME="border"
+RULES="all"
+CLASS="CALSTABLE"
+><COL><COL><TBODY
+><TR
+><TD
+><B
+CLASS="COMMAND"
+>./Setup.lhs sdist </B
+></TD
+><TD
+><P
+> Create a source tarball</P
+></TD
+></TR
+><TR
+><TD
+><B
+CLASS="COMMAND"
+>... </B
+></TD
+><TD
+><P
+>...</P
+></TD
+></TR
+></TBODY
+></TABLE
+></DIV
+>
+    </P
+><P
+>Distribution.Simple.defaultMain provides interactive command-line
+help.  For each command, a help string is available by typing
+"./Setup.lhs COMMAND --help".</P
+></DIV
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="AEN803"
+>5.4. The Makefile route</A
+></H2
+><P
+>The Haskell libraries that support the simple build infrastructure can, of course, also
+be re-used to make setup scripts that work quite differently.  At one extreme is a setup
+script that immediately shells out into <VAR
+CLASS="LITERAL"
+>make</VAR
+>, which does all the work.</P
+><P
+>To support this, <SPAN
+CLASS="APPLICATION"
+>Cabal</SPAN
+> provides a trivial setup library <VAR
+CLASS="LITERAL"
+>Distribution.Make</VAR
+>, which
+simply parses the command line arguments and shells out into <VAR
+CLASS="LITERAL"
+>make</VAR
+>.  Marcus uses the following
+<TT
+CLASS="FILENAME"
+>Setup.lhs</TT
+>
+<PRE
+CLASS="PROGRAMLISTING"
+>  #! /usr/bin/env runhugs
+
+  &#62; module Main where
+  &#62; import Distribution.Make (defaultMain)
+  &#62; main = defaultMain</PRE
+>
+All the package description information is assumed to be known to the makefile system, and so does not
+appear in the setup script.
+Thus, 
+<PRE
+CLASS="PROGRAMLISTING"
+>  ./Setup.lhs configure --ghc</PRE
+>
+invokes
+<PRE
+CLASS="PROGRAMLISTING"
+>  ./configure --with-hc=ghc</PRE
+>
+Similarly
+<VAR
+CLASS="LITERAL"
+>./Setup.lhs build</VAR
+>
+invokes
+<VAR
+CLASS="LITERAL"
+>make all</VAR
+> And so on.</P
+><P
+>Marcus simply arranges that when his makefiles build a distribution, they include this simple setup script in
+the root of the distribution, where the Bob the Builder expects to find it.</P
+></DIV
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="x444.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>Home</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="a818.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>The setup script</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+>&nbsp;</TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>Layered Tools</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

@@ -1,0 +1,254 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML
+><HEAD
+><TITLE
+>Related Systems</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.7"><LINK
+REL="HOME"
+TITLE="Library Infrastructure Project"
+HREF="index.html"><LINK
+REL="PREVIOUS"
+TITLE="Development Plan"
+HREF="x403.html"><LINK
+REL="NEXT"
+TITLE="Python Distutils"
+HREF="x456.html"></HEAD
+><BODY
+CLASS="APPENDIX"
+BGCOLOR="#FFFFFF"
+TEXT="#000000"
+LINK="#0000FF"
+VLINK="#840084"
+ALINK="#0000FF"
+><DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="3"
+ALIGN="center"
+>Library Infrastructure Project</TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="bottom"
+><A
+HREF="x403.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="80%"
+ALIGN="center"
+VALIGN="bottom"
+></TD
+><TD
+WIDTH="10%"
+ALIGN="right"
+VALIGN="bottom"
+><A
+HREF="x456.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="APPENDIX"
+><H1
+CLASS="APPENDIX"
+><A
+NAME="AEN428"
+>A. Related Systems</A
+></H1
+><P
+>I will try to outline interesting points in a variety of systems
+that we can learn from.  These systems may be intended for building or
+installing packages, or repositories for packages.  I am not deeply
+familiar with all of the tools here, and would be interested in
+hearing more relevant points from someone with more knowledge.
+Another weakness of mine is that I don't know much about Microsoft
+Windows, so some good examples for Windows systems would be
+helpful.</P
+><DIV
+CLASS="SECTION"
+><H1
+CLASS="SECTION"
+><A
+NAME="LIP-APPENDIX-DEBIAN"
+>A.1. Debian</A
+></H1
+><P
+>The <A
+HREF="http://www.debian.org"
+TARGET="_top"
+>Debian GNU/Linux system</A
+>
+is a good example of a <SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>binary</I
+></SPAN
+> distribution
+(meaning that packages are distributed in binary, as opposed to source
+code form), and its packaging system (<SPAN
+CLASS="APPLICATION"
+>dpkg</SPAN
+>)
+is somewhat similar to the more famous <SPAN
+CLASS="APPLICATION"
+>RPM</SPAN
+>.
+Debian has several other tools to help the user to install packages,
+most notably, <B
+CLASS="COMMAND"
+>apt</B
+>.  The Debian toolset is
+interesting for several reasons:
+
+<P
+></P
+><UL
+><LI
+><P
+>It handles dependencies extremely well.  A single
+  command can download and install a package, as well as downloading
+  and installing all of its dependencies.</P
+></LI
+><LI
+><P
+>It handles updates extremely well.  One command
+  (<B
+CLASS="COMMAND"
+>apt-get update</B
+>) checks for new versions of
+  packages and updates a local database.  Another command
+  (<B
+CLASS="COMMAND"
+>apt-get dist-upgrade</B
+>) downloads and installs all
+  new versions of installed packages and any new
+  dependencies.</P
+></LI
+><LI
+><P
+>There are standard commands for downloading and
+  building packages from source.  If I'm interested in hacking on a
+  package, I can run <B
+CLASS="COMMAND"
+>apt-get source packagename</B
+>
+  which will download and unpack the source code for the package.  The
+  source can then be built with the standard command
+  <B
+CLASS="COMMAND"
+>debuild</B
+>.</P
+></LI
+><LI
+><P
+>The Debian Project maintains a central repository
+  for packages, and the packaging tools offer support for using
+  unofficial repositories as well.  The central repositories include a
+  set of servers, the <SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>autobuilders</I
+></SPAN
+>, which compile
+  uploaded source packages for a variety of hardware architectures
+  (see below) and make them available as binary packages.  As a
+  packager, I merely upload the source code to my package, and the
+  autobuilders do the rest.</P
+></LI
+><LI
+><P
+>Currently the hardware architectures supported by
+  Debian are Intel x86, Motorola 68k, Sun SPARC, Alpha, PowerPC, ARM,
+  MIPS, HP PA-RISC, IA-64, S/390.  Debian also runs on non-Linux
+  systems, including GNU/Hurd, GNU/NetBSD, and GNU/FreeBSD.  The
+  package management tools also run on MacOS X under the name of the
+  <SPAN
+CLASS="APPLICATION"
+>Fink</SPAN
+> project.</P
+></LI
+></UL
+></P
+></DIV
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="x403.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>Home</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="x456.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>Development Plan</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+>&nbsp;</TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>Python Distutils</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

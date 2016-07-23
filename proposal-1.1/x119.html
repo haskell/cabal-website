@@ -1,0 +1,653 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML
+><HEAD
+><TITLE
+>The Haskell Package System: overview</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.7"><LINK
+REL="HOME"
+TITLE="The Haskell Package System"
+HREF="index.html"><LINK
+REL="PREVIOUS"
+TITLE="The Haskell Package System"
+HREF="index.html"><LINK
+REL="NEXT"
+TITLE="What the compilers must implement"
+HREF="x251.html"></HEAD
+><BODY
+CLASS="SECT1"
+BGCOLOR="#FFFFFF"
+TEXT="#000000"
+LINK="#0000FF"
+VLINK="#840084"
+ALINK="#0000FF"
+><DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="3"
+ALIGN="center"
+>The Haskell Package System</TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="bottom"
+><A
+HREF="index.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="80%"
+ALIGN="center"
+VALIGN="bottom"
+></TD
+><TD
+WIDTH="10%"
+ALIGN="right"
+VALIGN="bottom"
+><A
+HREF="x251.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="SECT1"
+><H1
+CLASS="SECT1"
+><A
+NAME="HLI-OVERVIEW"
+>2. The Haskell Package System: overview</A
+></H1
+><P
+>This section summarises the vocabulary and main features of the Haskell Package System.</P
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="PACKAGE-DESCR"
+>2.1. Packages</A
+></H2
+><P
+>A <SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>package</I
+></SPAN
+> is the unit of distribution for the <SPAN
+CLASS="APPLICATION"
+>HPS</SPAN
+>.
+Its purpose in life, when installed, is to make available some Haskell modules for
+import by some other Haskell program.   However, a package may consist of 
+much more than a bunch of Haskell
+modules: it may also have C source code and header files, documentation, test cases, auxiliary 
+tools and whatnot.</P
+><P
+>Each package has:
+<P
+></P
+><UL
+><LI
+><P
+>A globally-unique <SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>package name</I
+></SPAN
+>, containing no spaces. Chaos will result
+if two distinct packages with the same name are installed on the same system.  How unique package names are
+handed out is not part of this specification, but there will presumably be some global web site where
+package authors can go to register a package name. </P
+></LI
+><LI
+><P
+>A <SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>version</I
+></SPAN
+>, consisting of a sequence of one or more integers.</P
+></LI
+><LI
+><P
+><SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>A list of explicit dependencies</I
+></SPAN
+> on other packages.  These are typically not exact; e.g. "I need <VAR
+CLASS="LITERAL"
+>hunit</VAR
+> version
+greater than 2.4".
+	    </P
+></LI
+><LI
+><P
+><SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>A list of exposed modules</I
+></SPAN
+>.  Not all of the modules that comprise a package implementation are necessarily
+exposed to a package client.
+The ability to expose some, but not all, of the modules making up a package
+is rather like using an explicit export list on a Haskell module.</P
+></LI
+></UL
+>
+The first two components can be combined to form a single text string called the <SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>package ID</I
+></SPAN
+>, 
+using a hyphen to separate the version
+from the name, and dots to separate the version components.  For example, "hunit-2.3".</P
+></DIV
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="PACKAGES-AND-HASKELL"
+>2.2. Packages and the Haskell language</A
+></H2
+><P
+>A complete Haskell program will consist of one or more modules (including <VAR
+CLASS="LITERAL"
+>Main</VAR
+>)
+compiled against one or more packages (of which the Prelude is one).  These packages are not referred to
+explicitly in the Haskell source; instead, the packages simply populate the hierarchical space of module names.</P
+><P
+>Complete programs must obey the following invariant.  <SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>Consider all the Haskell modules that
+constitute a complete program: no two modules must have the same module name.</I
+></SPAN
+></P
+><P
+>This invariant is conservative.  It preserves the existing semantics of Haskell, and is 
+relatively easy to implement.  In particular, the the full name of an entity (type, class, function), which is
+used to determine when two entities are the same, is simply a pair of the module name and the entity name.</P
+><P
+>The invariant is unsatisfactory, however, because it does not support abstraction at
+the package level. For example, a module with an internal (hidden, non-exposed) module called <VAR
+CLASS="LITERAL"
+>Foo</VAR
+>
+cannot be used in the same program as another package with an unrelated internal module also called <VAR
+CLASS="LITERAL"
+>Foo</VAR
+>.
+Nor can a program use two packages, P and Q, which depend on different versions of the same underlying package R.
+We considered more sophisticated schemes, in which (for example) the package name, or package ID, is implicitly
+made part of every module name.  But (a) there is a big design space, and (b) it places new requirements on the
+implementations.  Hence a conservative starting point.</P
+></DIV
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="AEN153"
+>2.3. Packages and compilers</A
+></H2
+><P
+>We use the term ``compiler'' to mean <SPAN
+CLASS="APPLICATION"
+>GHC</SPAN
+>, <SPAN
+CLASS="APPLICATION"
+>Hugs</SPAN
+>, <SPAN
+CLASS="APPLICATION"
+>Nhc98</SPAN
+>, hbc, etc.  (Even though
+<SPAN
+CLASS="APPLICATION"
+>Hugs</SPAN
+> isn't really a compiler, the term is less clumsy than ``Haskell implementation''.)</P
+><P
+> The
+<SPAN
+CLASS="APPLICATION"
+>HPS</SPAN
+> requires that a conforming Haskell compiler is somewhat package aware.
+In summary, the requirements are these:
+<P
+></P
+><UL
+><LI
+><P
+>Each compiler <B
+CLASS="COMMAND"
+>hc</B
+> must provide an
+associated package-management program <B
+CLASS="COMMAND"
+>hc-pkg</B
+>.  A compiler user
+installs a package by placing the package's supporting files
+somewhere, and then using <B
+CLASS="COMMAND"
+>hc-pkg</B
+> to make the compiler aware of the
+new package.  This step is called <SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>registering the package
+with the compiler</I
+></SPAN
+>.  </P
+></LI
+><LI
+><P
+>To
+register a package, <B
+CLASS="COMMAND"
+>hc-pkg</B
+> takes as input an <SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>installed
+package description (IPD)</I
+></SPAN
+>, which describes the installed
+form of the package in detail.  The format of an IPD is given in <A
+HREF="x251.html#IPD"
+>Section 3.4</A
+>.</P
+></LI
+><LI
+><P
+>Subsequent invocations of <B
+CLASS="COMMAND"
+>hc</B
+>
+            will include modules from the new package in the module
+            name space (i.e. visible to <VAR
+CLASS="LITERAL"
+>import</VAR
+>
+            statements).</P
+></LI
+><LI
+><P
+>The compiler should support
+            <VAR
+CLASS="OPTION"
+>-package</VAR
+> and
+            <VAR
+CLASS="OPTION"
+>-hide-package</VAR
+> flags for finer-grain
+            control of package visibility.</P
+></LI
+></UL
+>
+
+        A complete specification of these requirements is given in
+        <A
+HREF="x251.html"
+>Section 3</A
+>.</P
+></DIV
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="AEN183"
+>2.4. Package distributions</A
+></H2
+><P
+>A <SPAN
+CLASS="APPLICATION"
+>HPS</SPAN
+> package can be distributed in several forms:
+<P
+></P
+><UL
+><LI
+><P
+>A <SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+><SPAN
+CLASS="APPLICATION"
+>HPS</SPAN
+> source distribution</I
+></SPAN
+> is a tree of files (tar-ball, zip file etc)
+containing the <SPAN
+CLASS="APPLICATION"
+>tool</SPAN
+>'s sources, which may need to be
+compiled before being installed.  The same source tarball may well be installable for several
+Haskell implementations, OSs, and platforms.
+	    </P
+><P
+>A source distribution may contain fewer files than appear in the developer's CVS repository; for example,
+tests and design notes may be omitted.  It may also contain some derived files, that do not appear in the
+the developer's repository; for example, ones made by a somewhat exotic pre-processor where it
+seems simpler to ship the derived file than to ensure that all consumers have the pre-processor.</P
+></LI
+><LI
+><P
+>A <SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+><SPAN
+CLASS="APPLICATION"
+>HPS</SPAN
+> binary distribution</I
+></SPAN
+> is a tree of files that contains a pre-compiled <SPAN
+CLASS="APPLICATION"
+>tool</SPAN
+>, ready
+for installation.  The pre-compilation means that the distribution will be Haskell-compiler-specific, and certain 
+"looser" dependencies (<VAR
+CLASS="LITERAL"
+>hunit &#62; 2.3</VAR
+>) will now be precisely fixed (<VAR
+CLASS="LITERAL"
+>hunit == 2.4</VAR
+>).
+	    </P
+></LI
+><LI
+><P
+>The package may be wrapped up as an <SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>RPM</I
+></SPAN
+>, <SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>Debian</I
+></SPAN
+> package, 
+or <SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>Windows installer</I
+></SPAN
+> (this list is not exhaustive).
+In that case, the way it is installed is prescribed by the respective distribution mechanism;
+the only role of the <SPAN
+CLASS="APPLICATION"
+>HPS</SPAN
+> is to make it easy to construct such distributions. All three are
+compiler-specific (indeed compiler-version-specific) binary distributions.
+	    </P
+></LI
+></UL
+></P
+></DIV
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="AEN207"
+>2.5. The Setup script</A
+></H2
+><P
+>The key question is this: how should Angela Author present her <SPAN
+CLASS="APPLICATION"
+>HPS</SPAN
+> package so that 
+her consumers (Bob, Sam, Willie, etc) can conveniently use it?</P
+><P
+>Answer: she provides a tree of files, with two specific files in the
+root directory of the tree:  
+<P
+></P
+><UL
+><LI
+><P
+><TT
+CLASS="FILENAME"
+>pkg.desc</TT
+> contains a short description of the package:
+specifically, the package name, version, and dependencies.  It may also contain further information
+specific to the particular build system.  The syntax of the package description file
+is given in <A
+HREF="x422.html#PKG-DESC"
+>Section 4.1</A
+>.
+	    </P
+></LI
+><LI
+><P
+><TT
+CLASS="FILENAME"
+>Setup.lhs</TT
+> is an executable Haskell program 
+which conforms to a particular specification, given in detail in <A
+HREF="x422.html"
+>Section 4</A
+>.
+In summary, though, <TT
+CLASS="FILENAME"
+>Setup.lhs</TT
+> allows a consumer to configure, build,
+test, install, register, and unregister a package.  </P
+></LI
+></UL
+>
+The <SPAN
+CLASS="APPLICATION"
+>HPS</SPAN
+> allows a package author to write the setup script in any way she pleases, provided
+it conforms to the specification of <A
+HREF="x422.html"
+>Section 4</A
+>.  However, many Haskell packages consist
+of little more than a bunch of Haskell modules, and for these the <SPAN
+CLASS="APPLICATION"
+>HPS</SPAN
+> provides <SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>the simple
+build infrastructure</I
+></SPAN
+>, a Haskell library that does
+all the work.  The simple build infrastructure, which was used for the example in 
+<A
+HREF="index.html#EXAMPLE"
+>Section 1.2</A
+>, is described in <A
+HREF="x581.html"
+>Section 5</A
+>.</P
+><P
+>In principle, the <VAR
+CLASS="LITERAL"
+>Setup</VAR
+> script
+could be written in any language; so why do we use Haskell?
+<P
+></P
+><UL
+><LI
+><P
+>Haskell runs on all the systems of interest.</P
+></LI
+><LI
+><P
+>Haskell's standard libraries should include a rich set of operating
+system operations needed for the task.  These can abstract-away the
+differences between systems in a way that is not possible for
+Make-based tools.</P
+></LI
+><LI
+><P
+>Haskell is a great language for many things, including tasks
+typically relegated to languages like Python.  Building, installing,
+and managing packages is a perfect proving ground for these tasks, and
+can help us to discover weaknesses in Haskell or its libraries that
+prevent it from breaking into this "market".  A positive side-effect
+of this project might be to make Haskell more suitable for "scripting"
+tasks.</P
+></LI
+><LI
+><P
+>Likewise, each piece of the project (Building, Installing, and
+Packaging) can be leveraged elsewhere if we make them into
+libraries.</P
+></LI
+><LI
+><P
+>Make is not particularly good for parsing, processing, and sharing
+meta-information about packages.  The availability of this information
+to Haskell systems (including compilers, interpreters, and other
+tools) is useful.  Unlike Make, Haskell can also reuse unrelated
+algorithms, parsers, and other libraries that have been developed in
+the past.</P
+></LI
+><LI
+><P
+><SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>Dogfooding</I
+></SPAN
+>, the act of using the tools you
+develop, is a healthy policy.</P
+></LI
+></UL
+>
+It is convenient for consumers to execute <TT
+CLASS="FILENAME"
+>Setup.lhs</TT
+> directly, thus:
+<PRE
+CLASS="PROGRAMLISTING"
+>  ./Setup.lhs ...</PRE
+>
+This can be achieved by starting <TT
+CLASS="FILENAME"
+>Setup.lhs</TT
+> with "<VAR
+CLASS="LITERAL"
+>#! runhugs</VAR
+>"
+or "<VAR
+CLASS="LITERAL"
+>#! runghc</VAR
+>" .
+Since it's a literate Haskell script (<VAR
+CLASS="LITERAL"
+>.lhs</VAR
+> file), the Haskell compiler will ignore
+this line.
+However, nothing stops a consumer from running the script interactively, or compiling it and running 
+the compiled binary.  Any implementation of Haskell should suffice to run the script, provided 
+the implementation has the <SPAN
+CLASS="APPLICATION"
+>HPS</SPAN
+> libraries installed.  
+	</P
+></DIV
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>Home</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="x251.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>The Haskell Package System</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+>&nbsp;</TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>What the compilers must implement</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

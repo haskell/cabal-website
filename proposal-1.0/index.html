@@ -1,0 +1,473 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML
+><HEAD
+><TITLE
+>Library Infrastructure Project</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.7"><LINK
+REL="NEXT"
+TITLE="Issues Facing Developers"
+HREF="x38.html"></HEAD
+><BODY
+CLASS="ARTICLE"
+BGCOLOR="#FFFFFF"
+TEXT="#000000"
+LINK="#0000FF"
+VLINK="#840084"
+ALINK="#0000FF"
+><DIV
+CLASS="ARTICLE"
+><DIV
+CLASS="TITLEPAGE"
+><H1
+CLASS="TITLE"
+><A
+NAME="AEN2"
+>Library Infrastructure Project</A
+></H1
+><H3
+CLASS="AUTHOR"
+><A
+NAME="AEN5"
+>Isaac Jones</A
+></H3
+><DIV
+><DIV
+CLASS="ABSTRACT"
+><P
+></P
+><A
+NAME="AEN10"
+></A
+><P
+>The Library Infrastructure Project is an effort to provide
+      a framework for developers to more effectively contribute their
+      software to the Haskell community.</P
+><P
+>The Haskell Implementations<A
+NAME="AEN13"
+HREF="#FTN.AEN13"
+><SPAN
+CLASS="footnote"
+>[1]</SPAN
+></A
+> come included
+      with a good set of standard libraries, but this set is
+      constantly growing and is maintained centrally.  This model does
+      not scale up well, and as Haskell grows in acceptance, the
+      quality and quantity of available libraries is becoming a major
+      issue.  There are a wide variety of Haskell Implementations (both compilers and
+      interpreters), each of which target a variety of hardware
+      architectures and operating systems.  There are also a number of
+      different groups and individuals providing libraries, and these
+      libraries depend upon each other and they depend upon external
+      systems such as Java or GTK.</P
+><P
+>It can be very difficult for an end user to manage these
+      dependencies and build all the necessary software at the correct
+      version numbers on their platform: there is currently no generic
+      build system to abstract away differences between Haskell
+      Implementations and operating systems <A
+NAME="AEN16"
+HREF="#FTN.AEN16"
+><SPAN
+CLASS="footnote"
+>[2]</SPAN
+></A
+>.</P
+><P
+>The Library Infrastructure Project seeks to provide some
+      relief to this situation by building tools to assist developers,
+      end users, and operating system distributers. </P
+><P
+>This is a draft proposal.  If you have comments, please
+      email <A
+HREF="mailto:ijones@syntaxpolice.org"
+TARGET="_top"
+>Isaac
+      Jones</A
+>.  The latest version of this document should be
+      available in a variety of formats from the Library
+      Infrastructure Project <A
+HREF="http://www.haskell.org/libraryInfrastructure"
+TARGET="_top"
+>home
+      page</A
+>.</P
+><P
+></P
+></DIV
+></DIV
+><HR></DIV
+><DIV
+CLASS="TOC"
+><DL
+><DT
+><B
+>Table of Contents</B
+></DT
+><DT
+>1. <A
+HREF="index.html#LIP-OVERVIEW"
+>High-Level Overview</A
+></DT
+><DT
+>2. <A
+HREF="x38.html"
+>Issues Facing Developers</A
+></DT
+><DD
+><DL
+><DT
+>2.1. <A
+HREF="x38.html#LIP-PROBLEMS-PACKAGERS"
+>Issues Facing Packagers</A
+></DT
+><DT
+>2.2. <A
+HREF="x38.html#LIP-PROBLEMS-SOLVE"
+>Why We Should Solve This</A
+></DT
+></DL
+></DD
+><DT
+>3. <A
+HREF="x78.html"
+>A Solution for Haskell in Haskell</A
+></DT
+><DD
+><DL
+><DT
+>3.1. <A
+HREF="x78.html#LIP-MODULES"
+>The Module Design</A
+></DT
+><DT
+>3.2. <A
+HREF="x78.html#LIP-WHY-HASKELL"
+>But Why Should We Use Haskell?</A
+></DT
+><DT
+>3.3. <A
+HREF="x78.html#LIP-COMMAND"
+>Setup.lhs Command-Line Interface</A
+></DT
+><DT
+>3.4. <A
+HREF="x78.html#LIP-SCRIPT-EXAMPLE"
+>An Example Setup.lhs Script</A
+></DT
+></DL
+></DD
+><DT
+>4. <A
+HREF="x193.html"
+>Distribution Module</A
+></DT
+><DD
+><DL
+><DT
+>4.1. <A
+HREF="x193.html#LIP-BUILD"
+><CODE
+CLASS="CLASSNAME"
+>Distribution.Build</CODE
+></A
+></DT
+><DT
+>4.2. <A
+HREF="x193.html#LIP-INSTALL"
+><CODE
+CLASS="CLASSNAME"
+>Distribution.Install</CODE
+></A
+></DT
+><DT
+>4.3. <A
+HREF="x193.html#LIP-PACKAGING"
+><CODE
+CLASS="CLASSNAME"
+>Distribution.Package</CODE
+></A
+></DT
+><DD
+><DL
+><DT
+>4.3.1. <A
+HREF="x193.html#LIP-PACKAGECONFIG"
+>PackageConfig Data Structure</A
+></DT
+></DL
+></DD
+><DT
+>4.4. <A
+HREF="x193.html#LIP-HASKELL-CONFIG"
+><SPAN
+CLASS="APPLICATION"
+>haskell-config</SPAN
+> Command-line
+  interface</A
+></DT
+><DT
+>4.5. <A
+HREF="x193.html#LIP-HASKELL-PACKAGE"
+>haskell-pkg?</A
+></DT
+><DT
+>4.6. <A
+HREF="x193.html#LIP-CONFIGURE"
+><CODE
+CLASS="CLASSNAME"
+>Distribution.Config</CODE
+></A
+></DT
+></DL
+></DD
+><DT
+>5. <A
+HREF="x321.html"
+>Use Cases</A
+></DT
+><DT
+>6. <A
+HREF="x396.html"
+>Means of Distribution
+  and Layered Tools</A
+></DT
+><DT
+>7. <A
+HREF="x403.html"
+>Development Plan</A
+></DT
+><DT
+>A. <A
+HREF="a428.html"
+>Related Systems</A
+></DT
+><DD
+><DL
+><DT
+>A.1. <A
+HREF="a428.html#LIP-APPENDIX-DEBIAN"
+>Debian</A
+></DT
+><DT
+>A.2. <A
+HREF="x456.html"
+>Python Distutils</A
+></DT
+><DT
+>A.3. <A
+HREF="x466.html"
+><SPAN
+CLASS="APPLICATION"
+>CPAN</SPAN
+> and Boost</A
+></DT
+><DT
+>A.4. <A
+HREF="x484.html"
+>FreeBSD's Ports System</A
+></DT
+><DT
+>A.5. <A
+HREF="x489.html"
+>The <SPAN
+CLASS="APPLICATION"
+>XEmacs</SPAN
+> Packaging
+System</A
+></DT
+><DT
+>A.6. <A
+HREF="x498.html"
+>Make-Based Systems</A
+></DT
+><DT
+>A.7. <A
+HREF="x507.html"
+><SPAN
+CLASS="APPLICATION"
+>hmake</SPAN
+></A
+></DT
+></DL
+></DD
+></DL
+></DIV
+><DIV
+CLASS="SECTION"
+><H1
+CLASS="SECTION"
+><A
+NAME="LIP-OVERVIEW"
+>1. High-Level Overview</A
+></H1
+><P
+>On a high level, we say that we want the system to help the
+  user to install packages (whether they be libraries or applications)
+  and their dependencies.  To accomplish this, we propose a system
+  similar to Python's <SPAN
+CLASS="APPLICATION"
+>Distutils</SPAN
+> (<A
+HREF="x456.html"
+>Section A.2</A
+>) where each Haskell tool is
+  distributed with a script (<A
+HREF="x78.html#LIP-SCRIPT-EXAMPLE"
+>Section 3.4</A
+>)
+  which has a standard command-line interface.  This script will
+  provide a familiar user interface (<A
+HREF="x78.html#LIP-COMMAND"
+>Section 3.3</A
+>) for
+  compiling, installing, and removing packages and their
+  dependencies.</P
+><P
+>For instance, to install the <SPAN
+CLASS="APPLICATION"
+>HUnit</SPAN
+> package, the user might
+  download the source code from the web site, change into the <SPAN
+CLASS="APPLICATION"
+>HUnit</SPAN
+>
+  directory, and type <B
+CLASS="COMMAND"
+>./Setup.lhs install default</B
+>,
+  which would build and install the <SPAN
+CLASS="APPLICATION"
+>HUnit</SPAN
+> package for the default
+  compiler.  Similarly, he might type <B
+CLASS="COMMAND"
+>./Setup.lhs install
+  nhc</B
+> to install the package for <SPAN
+CLASS="APPLICATION"
+>NHC</SPAN
+>.</P
+><P
+>Other tasks might be necessary to make the package known to
+  the system, such as registering it with the Haskell Implementation of interest
+  (<A
+HREF="x193.html#LIP-PACKAGING"
+>Section 4.3</A
+>).  Such tasks would also be
+  performed by this Setup program.</P
+></DIV
+></DIV
+><H3
+CLASS="FOOTNOTES"
+>Notes</H3
+><TABLE
+BORDER="0"
+CLASS="FOOTNOTES"
+WIDTH="100%"
+><TR
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+WIDTH="5%"
+><A
+NAME="FTN.AEN13"
+HREF="index.html#AEN13"
+><SPAN
+CLASS="footnote"
+>[1]</SPAN
+></A
+></TD
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+WIDTH="95%"
+><P
+>Herein, I will use Haskell Implementation as a
+      catch-all phrase to include compilers and interpreters for the
+      Haskell programming language.</P
+></TD
+></TR
+><TR
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+WIDTH="5%"
+><A
+NAME="FTN.AEN16"
+HREF="index.html#AEN16"
+><SPAN
+CLASS="footnote"
+>[2]</SPAN
+></A
+></TD
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+WIDTH="95%"
+><P
+>Your
+      humble author has in-depth knowledge of Debian GNU/Linux, but
+      could probably learn a thing or two about other operating
+      systems like Windows and MacOS.  Should you notice anything here
+      which offends your sense of operating system, please let me
+      know.</P
+></TD
+></TR
+></TABLE
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>&nbsp;</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+>&nbsp;</TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="x38.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>&nbsp;</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+>&nbsp;</TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>Issues Facing Developers</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

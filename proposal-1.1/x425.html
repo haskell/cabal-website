@@ -1,0 +1,727 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML
+><HEAD
+><TITLE
+>The setup script</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.7"><LINK
+REL="HOME"
+TITLE="The Haskell Package System"
+HREF="index.html"><LINK
+REL="PREVIOUS"
+TITLE="What the compilers must implement"
+HREF="x254.html"><LINK
+REL="NEXT"
+TITLE="The HPS simple build infrastructure"
+HREF="x584.html"></HEAD
+><BODY
+CLASS="SECT1"
+BGCOLOR="#FFFFFF"
+TEXT="#000000"
+LINK="#0000FF"
+VLINK="#840084"
+ALINK="#0000FF"
+><DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="3"
+ALIGN="center"
+>The Haskell Package System</TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="bottom"
+><A
+HREF="x254.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="80%"
+ALIGN="center"
+VALIGN="bottom"
+></TD
+><TD
+WIDTH="10%"
+ALIGN="right"
+VALIGN="bottom"
+><A
+HREF="x584.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="SECT1"
+><H1
+CLASS="SECT1"
+><A
+NAME="SETUP"
+>4. The setup script</A
+></H1
+><P
+>The sole requirement of an <SPAN
+CLASS="APPLICATION"
+>HPS</SPAN
+> package is that it should contain,
+in the root of its file structure, (a) a package description file <TT
+CLASS="FILENAME"
+>pkg.desc</TT
+>,
+and (b) a setup script, <TT
+CLASS="FILENAME"
+>Setup.lhs</TT
+>.
+This section
+specifies the syntax of the package description, and the command-line interface for the setup script.</P
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="PKG-DESC"
+>4.1. The package description</A
+></H2
+><P
+>Here is a sample package description file:
+<PRE
+CLASS="PROGRAMLISTING"
+>  name:    hunit
+  version: 4.3
+  deps:    [ foogle &#62; 2.9, bargle = 2.5.1 ]</PRE
+>
+The first two lines are compulsory. The dependencies are optional, assumed empty if omitted. 
+There can be more lines, all of the form <SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>name: stuff</I
+></SPAN
+>, specific to the particular
+setup script in use.  For the <SPAN
+CLASS="APPLICATION"
+>HPS</SPAN
+>-provided simple build infrastructure, the package description syntax
+is given in <A
+HREF="x584.html#SBI-PKG-DESC"
+>Section 5.2</A
+>.</P
+><P
+>The exact syntax is still undecided.  Should we put everything in quotes?
+<PRE
+CLASS="PROGRAMLISTING"
+>  deps:    [ "foogle &#62; 2.9", "bargle = 2.5.1" ]</PRE
+>
+If not, how can a program that doesn't understand a particular field safely ignore it?  Skip to end of line?
+But there may be many lines in fields like <VAR
+CLASS="LITERAL"
+>deps</VAR
+>.
+<SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>ToDo: pick a syntax, provide a parser in the Distribution
+libraries somewhere.</I
+></SPAN
+></P
+></DIV
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="SETUP-SPEC"
+>4.2. The setup script specification</A
+></H2
+><P
+>Here is the command-line interface the setup script must satisfy.
+     <DIV
+CLASS="TABLE"
+><A
+NAME="AEN445"
+></A
+><P
+><B
+>Table 2. setup.lhs interface</B
+></P
+><TABLE
+BORDER="1"
+FRAME="border"
+RULES="all"
+CLASS="CALSTABLE"
+><COL><COL><TBODY
+><TR
+><TD
+><B
+CLASS="COMMAND"
+>./Setup.lhs configure [flags] </B
+></TD
+><TD
+><P
+> Prepare to build the package.  Typically, this step checks
+		that the target platform is capable of building the package, and
+		discovers platform-specific features that are needed during the build. 
+		</P
+></TD
+></TR
+><TR
+><TD
+><B
+CLASS="COMMAND"
+>./Setup.lhs build</B
+></TD
+><TD
+><P
+>Make this package ready for installation.  For a true compiler,
+		  this step involves compiling the Haskell source code.  Even for an interpreter, however, 
+		  it may involve running a pre-processor.</P
+></TD
+></TR
+><TR
+><TD
+><B
+CLASS="COMMAND"
+>./Setup.lhs install [install-prefix]</B
+></TD
+><TD
+><P
+>Copy the files into the install locations, and register
+		  the package with the compiler.</P
+></TD
+></TR
+><TR
+><TD
+><P
+><B
+CLASS="COMMAND"
+>./Setup.lhs register</B
+> <BR><BR><B
+CLASS="COMMAND"
+>./Setup.lhs unregister</B
+> </P
+>
+	      </TD
+><TD
+><P
+>Register (or un-register) this package with the
+                    compiler.  (NB: registration is also done automatically by <VAR
+CLASS="LITERAL"
+>install</VAR
+>.)
+		</P
+></TD
+></TR
+><TR
+><TD
+><B
+CLASS="COMMAND"
+>./Setup.lhs test</B
+></TD
+><TD
+><P
+>Run the package's test suite.</P
+></TD
+></TR
+></TBODY
+></TABLE
+></DIV
+>
+    </P
+><P
+>For wrapped make-based systems (for instance), a
+      command-line parser that understands the standard
+      <VAR
+CLASS="LITERAL"
+>Setup.lhs</VAR
+> command-line syntax will be
+      provided as a library.</P
+><DIV
+CLASS="SECT3"
+><H3
+CLASS="SECT3"
+><A
+NAME="AEN480"
+>4.2.1. <VAR
+CLASS="OPTION"
+>configure</VAR
+></A
+></H3
+><P
+>The command <VAR
+CLASS="LITERAL"
+>./Setup.lhs configure</VAR
+>
+        prepares to build the package.  For sophisticated packages,
+        the configure step may perform elaborate checks, to gather
+        information about the target system.  It may write a file to
+        record its results, but the name and format of this file are
+        not part of the specification.</P
+><P
+>All flags are optional.  The flags are these:</P
+><P
+></P
+><UL
+><LI
+><P
+><VAR
+CLASS="OPTION"
+>--with-compiler=</VAR
+><VAR
+CLASS="REPLACEABLE"
+>path</VAR
+>, 
+<VAR
+CLASS="OPTION"
+>--ghc</VAR
+>, 
+<VAR
+CLASS="OPTION"
+>--nhc</VAR
+>, 
+<VAR
+CLASS="OPTION"
+>--hugs</VAR
+>: 
+specifies which compiler to use.  At most one of the value of these flags may be specified.
+The configure step checks
+that the compiler is available, in a sufficiently up-to-date form for the package, and that the package
+expects to work with that compiler.  If the compiler name
+is not specified, <VAR
+CLASS="LITERAL"
+>setup</VAR
+> will choose one; some packages will come with one compiler baked in.</P
+></LI
+><LI
+><P
+><VAR
+CLASS="OPTION"
+>--prefix=</VAR
+><VAR
+CLASS="REPLACEABLE"
+>path</VAR
+>: specifies where the installed files
+for the package should be installed.  Typically on Unix this will be <TT
+CLASS="FILENAME"
+>/usr/local</TT
+> and
+on Windows it will be <TT
+CLASS="FILENAME"
+>Program Files</TT
+>.  The setup script will use a sensible default
+(often platform-specific) if the flag is not specified.
+	    </P
+></LI
+><LI
+><P
+>Unrecognized flags are errors in the default build system, but may be meaningful to wrapped make-based systems (for instance).  Therefore, the provided command-line parser will pass unrecognized command-line flags on to the wrapped system.</P
+></LI
+></UL
+><P
+>It is OK for these flags to be "baked into" the compiled
+        <SPAN
+CLASS="APPLICATION"
+>tool</SPAN
+>.  In particular, the build system may bake the
+        installation path into the compiled files.  There is no
+        provision for changing these baked-into values after
+        configuration.</P
+></DIV
+><DIV
+CLASS="SECT3"
+><H3
+CLASS="SECT3"
+><A
+NAME="AEN505"
+>4.2.2. <VAR
+CLASS="OPTION"
+>build</VAR
+></A
+></H3
+><P
+>The command <VAR
+CLASS="LITERAL"
+>./Setup.lhs build</VAR
+> makes
+        this package ready for installation.  It takes no
+        flags.</P
+></DIV
+><DIV
+CLASS="SECT3"
+><H3
+CLASS="SECT3"
+><A
+NAME="AEN510"
+>4.2.3. <VAR
+CLASS="OPTION"
+>install</VAR
+></A
+></H3
+><P
+>The command <VAR
+CLASS="LITERAL"
+>./Setup.lhs install</VAR
+>
+        copies files from the built package to the right location for
+        installed files, specified in the configure step.  Then it
+        registers the new package with the compiler, using the
+        <B
+CLASS="COMMAND"
+>hc-pkg</B
+> command.</P
+><P
+></P
+><UL
+><LI
+><P
+><VAR
+CLASS="OPTION"
+>--install-prefix=</VAR
+><VAR
+CLASS="REPLACEABLE"
+>path</VAR
+>
+            has three effects.  First, it over-rides the
+            <VAR
+CLASS="OPTION"
+>--prefix</VAR
+> flag specified in the
+            <VAR
+CLASS="OPTION"
+>configure</VAR
+> step, providing an
+            alternative location.  Second, it does not call
+            <B
+CLASS="COMMAND"
+>hc-pkg</B
+> to register the package.
+            Instead, third, it creates an installed package
+            description file,
+            <TT
+CLASS="FILENAME"
+>installed-pkg-descr</TT
+>, which can later
+            be fed to <B
+CLASS="COMMAND"
+>hc-pkg</B
+>.
+	    </P
+></LI
+><LI
+><P
+><VAR
+CLASS="OPTION"
+>--user</VAR
+>: if present, this flag is
+            passed to <B
+CLASS="COMMAND"
+>hc-pkg</B
+> so that the package is registed for the
+            current user only.  This flag has no effect if
+            <VAR
+CLASS="OPTION"
+>--install-prefix</VAR
+> is used, because in
+            that case <B
+CLASS="COMMAND"
+>hc-pkg</B
+> is not called.</P
+></LI
+><LI
+><P
+><VAR
+CLASS="OPTION"
+>--global</VAR
+>: if present, this flag is
+            passed to <B
+CLASS="COMMAND"
+>hc-pkg</B
+> so that the package is registed
+            globally (this is the default if neither
+            <VAR
+CLASS="OPTION"
+>--user</VAR
+> or <VAR
+CLASS="OPTION"
+>--global</VAR
+> are
+            given).</P
+></LI
+></UL
+><P
+>The reason for the <VAR
+CLASS="OPTION"
+>--install-prefix</VAR
+>
+        flag is that Roland RPM wants to create an exact installation
+        tree, all ready to bundle up for the target machine,
+        <SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>but in a temporary location</I
+></SPAN
+>. He cannot
+        use this location for <VAR
+CLASS="OPTION"
+>--prefix</VAR
+> in the
+        <VAR
+CLASS="OPTION"
+>configure</VAR
+> step, because that might bake
+        the wrong path into some compiled files.  Nor does he want to
+        register this temporary tree with the compiler on his
+        machine. Instead, he bundles up the temporary installation
+        tree, plus the <TT
+CLASS="FILENAME"
+>installed-pkg-descr</TT
+>, and
+        ships them all to the target machine.  When they are installed
+        there, the post-installation script runs
+        <B
+CLASS="COMMAND"
+>hc-pkg</B
+> on the
+        <TT
+CLASS="FILENAME"
+>installed-pkg-descr</TT
+> file.
+	    </P
+><P
+>Note that there is no <B
+CLASS="COMMAND"
+>uninstall</B
+>
+        command in the setup script.  While it would be easy enough to
+        implement in the simple build infrastructure, we don't want to
+        require make-based build systems to implement <VAR
+CLASS="LITERAL"
+>make
+        uninstall</VAR
+>, which is fairly non-standard and
+        difficult to get right.  In the majority of cases, we expect
+        libraries to be installed via a package manager (eg. RPM,
+        Debian APT), which already provide uninstallation
+        services.</P
+></DIV
+><DIV
+CLASS="SECT3"
+><H3
+CLASS="SECT3"
+><A
+NAME="AEN549"
+>4.2.4. <VAR
+CLASS="OPTION"
+>register</VAR
+> and
+	<VAR
+CLASS="OPTION"
+>unregister</VAR
+></A
+></H3
+><P
+>The command <VAR
+CLASS="LITERAL"
+>./Setup.lhs register</VAR
+>
+        registers the now-installed package with the compiler.
+        Similarly, <VAR
+CLASS="LITERAL"
+>./Setup.lhs unregister</VAR
+>
+        un-registers the package.</P
+><P
+></P
+><UL
+><LI
+><P
+><VAR
+CLASS="OPTION"
+>--global</VAR
+>: registers/un-registers a
+            package as global.  This is the default.</P
+></LI
+><LI
+><P
+><VAR
+CLASS="OPTION"
+>--user</VAR
+>: registers/un-registers a
+            package for the current user only.</P
+></LI
+></UL
+></DIV
+></DIV
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="AEN563"
+>4.3. Examples</A
+></H2
+><DIV
+CLASS="SECT3"
+><H3
+CLASS="SECT3"
+><A
+NAME="AEN565"
+>4.3.1. Bob the Builder and Sam Sysadmin</A
+></H3
+><P
+>Bob the Builder can install a <SPAN
+CLASS="APPLICATION"
+>HPS</SPAN
+> source distribution thus.
+He downloads the source distribution and unpacks it into a temporary directory,
+<VAR
+CLASS="LITERAL"
+>cd</VAR
+>'s to that directory, and says
+<PRE
+CLASS="PROGRAMLISTING"
+>  ./Setup.lhs configure --ghc
+  ./Setup.lhs build
+  ./Setup.lhs install --user</PRE
+>
+Similarly, Sam Sysadmin does exactly the same, except that he says 
+<PRE
+CLASS="PROGRAMLISTING"
+>  ./Setup.lhs install --global</PRE
+>
+in the final step, so that the package is installed where all users will see it.
+      </P
+><P
+>For a binary distribution, both Bob and Sam would omit the first two steps, and just do the install step.</P
+></DIV
+><DIV
+CLASS="SECT3"
+><H3
+CLASS="SECT3"
+><A
+NAME="AEN573"
+>4.3.2. System packagers (Debian, RPM etc)</A
+></H3
+><P
+>System packagers, such as Donald Debian, will run the configure and build steps just like Bob and Sam.
+A that point, Donald will say
+<PRE
+CLASS="PROGRAMLISTING"
+>  ./Setup.lhs install --install-prefix=/tmp/donald</PRE
+>
+to construct a ready-to-zip tree of all the installed files, plus a file <TT
+CLASS="FILENAME"
+>installed-pkg-descr</TT
+>
+that describes the installed package.  He arranges to deliver both these components to the target machine,
+and then feed <TT
+CLASS="FILENAME"
+>installed-pkg-descr</TT
+> to <B
+CLASS="COMMAND"
+>hc-pkg</B
+> on the target machine.
+      </P
+><P
+>The file <TT
+CLASS="FILENAME"
+>installed-pkg-descr</TT
+> also
+        contains information he needs for building his Debian
+        distribution, namely the package name, version, and (exact)
+        dependencies.</P
+><P
+>We expect there to be additional tools to help System
+	Packagers to prepare the materials necessary to build their
+	packages from a source distribution.  For example, an RPM tool
+	could take a Haskell package source distribution and build an
+	initial <VAR
+CLASS="LITERAL"
+>.spec</VAR
+> file with as many of the
+	fields as possible filled in automatically.  In most cases
+	some intervention by the System Packager will be necessary;
+	for example platform-specific dependencies may need to be
+	specified.</P
+></DIV
+></DIV
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="x254.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>Home</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="x584.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>What the compilers must implement</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+>&nbsp;</TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>The <SPAN
+CLASS="APPLICATION"
+>HPS</SPAN
+> simple build infrastructure</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

@@ -1,0 +1,169 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML
+><HEAD
+><TITLE
+>Layered Tools</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.7"><LINK
+REL="HOME"
+TITLE="The Haskell Cabal"
+HREF="index.html"><LINK
+REL="PREVIOUS"
+TITLE="The Cabal simple build infrastructure"
+HREF="x611.html"><LINK
+REL="NEXT"
+TITLE="Related Systems"
+HREF="a825.html"></HEAD
+><BODY
+CLASS="APPENDIX"
+BGCOLOR="#FFFFFF"
+TEXT="#000000"
+LINK="#0000FF"
+VLINK="#840084"
+ALINK="#0000FF"
+><DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="3"
+ALIGN="center"
+>The Haskell Cabal: A Common Architecture for Building Applications and Tools</TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="bottom"
+><A
+HREF="x611.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="80%"
+ALIGN="center"
+VALIGN="bottom"
+></TD
+><TD
+WIDTH="10%"
+ALIGN="right"
+VALIGN="bottom"
+><A
+HREF="a825.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="APPENDIX"
+><H1
+CLASS="APPENDIX"
+><A
+NAME="AEN818"
+>A. Layered Tools</A
+></H1
+><P
+>One great advantage to having a standard configure/build/install
+interface for all Haskell packages is that end users don't need to
+learn a new method for each package they install.</P
+><P
+>Likewise, with such an interface, we can build layered tools in
+a typical Unix fashion.  For instance, we might want a tool that
+downloads and installs Haskell packages.  It can be implemented as a
+simple shell script, <SPAN
+CLASS="APPLICATION"
+>haskell-install</SPAN
+> (where
+"$@" represents the command-line argument):
+
+<PRE
+CLASS="PROGRAMLISTING"
+>#!/bin/sh
+
+echo "wget http://packages.haskell.org/$@"
+echo "tar -zxvf $@.tgz"
+echo "cd $@"
+echo "./Setup.lhs configure"
+echo "./Setup.lhs build"
+echo "./Setup.lhs install"</PRE
+></P
+><P
+>Now the end-user (Isabella) only needs to say "haskell-install
+myPackage", rather than performing all of the Setup steps by
+hand.</P
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="x611.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>Home</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="a825.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>The <SPAN
+CLASS="APPLICATION"
+>Cabal</SPAN
+> simple build infrastructure</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+>&nbsp;</TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>Related Systems</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

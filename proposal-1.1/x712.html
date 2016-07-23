@@ -1,0 +1,241 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML
+><HEAD
+><TITLE
+>CPAN and Boost</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.7"><LINK
+REL="HOME"
+TITLE="The Haskell Package System"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="Related Systems"
+HREF="a674.html"><LINK
+REL="PREVIOUS"
+TITLE="Python Distutils"
+HREF="x702.html"><LINK
+REL="NEXT"
+TITLE="FreeBSD's Ports System"
+HREF="x730.html"></HEAD
+><BODY
+CLASS="SECTION"
+BGCOLOR="#FFFFFF"
+TEXT="#000000"
+LINK="#0000FF"
+VLINK="#840084"
+ALINK="#0000FF"
+><DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="3"
+ALIGN="center"
+>The Haskell Package System</TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="bottom"
+><A
+HREF="x702.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="80%"
+ALIGN="center"
+VALIGN="bottom"
+>A. Related Systems</TD
+><TD
+WIDTH="10%"
+ALIGN="right"
+VALIGN="bottom"
+><A
+HREF="x730.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="SECTION"
+><H1
+CLASS="SECTION"
+><A
+NAME="LIP-APPENDIX-CPAN-BOOST"
+>A.3. <SPAN
+CLASS="APPLICATION"
+>CPAN</SPAN
+> and Boost</A
+></H1
+><P
+> Quoting from <SPAN
+CLASS="APPLICATION"
+>CPAN</SPAN
+>'s <A
+HREF="http://www.cpan.org"
+TARGET="_top"
+> web
+site </A
+> "<SPAN
+CLASS="APPLICATION"
+>CPAN</SPAN
+> is the Comprehensive Perl Archive Network, a
+large collection of Perl software and documentation."  That really
+says it all.  It is a central location where Perl developers can
+contribute the software they write.</P
+><P
+><SPAN
+CLASS="APPLICATION"
+>CPAN</SPAN
+> has a means of standardizing installation,
+<TT
+CLASS="FILENAME"
+>Makefile.pl</TT
+> (which is a Perl script which creates
+a Makefile with targets like "install", "test", "config", "clean", etc.). Makefile.pl typically uses the <A
+HREF="http://www.perldoc.com/perl5.6/lib/ExtUtils/MakeMaker.html"
+TARGET="_top"
+>MakeMover
+module</A
+>. It also has a means of registering a namespace for the
+module that a developer is contributing.</P
+><P
+>From the Boost <A
+HREF="http://www.boost.org"
+TARGET="_top"
+>web
+site</A
+> "[Boost] provides free peer-reviewed portable C++ source
+libraries. The emphasis is on libraries which work well with the C++
+Standard Library. One goal is to establish "existing practice" and
+provide reference implementations so that the Boost libraries are
+suitable for eventual standardization. Some of the libraries have
+already been proposed for inclusion in the C++ Standards Committee's
+upcoming C++ Standard Library Technical Report."</P
+><P
+>From what I can tell, unlike <SPAN
+CLASS="APPLICATION"
+>CPAN</SPAN
+>, Boost is a bit more focused
+on standards and review.  That is, it is perhaps more Cathedral than
+Bazaar <A
+NAME="AEN727"
+HREF="#FTN.AEN727"
+><SPAN
+CLASS="footnote"
+>[1]</SPAN
+></A
+>. Boost does not
+currently have a standard means of installation.</P
+></DIV
+><H3
+CLASS="FOOTNOTES"
+>Notes</H3
+><TABLE
+BORDER="0"
+CLASS="FOOTNOTES"
+WIDTH="100%"
+><TR
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+WIDTH="5%"
+><A
+NAME="FTN.AEN727"
+HREF="x712.html#AEN727"
+><SPAN
+CLASS="footnote"
+>[1]</SPAN
+></A
+></TD
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+WIDTH="95%"
+><P
+>See Eric Raymond's essay <A
+HREF="http://catb.org/~esr/writings/cathedral-bazaar/cathedral-bazaar/"
+TARGET="_top"
+>The
+Cathedral and the Bazaar</A
+>.</P
+></TD
+></TR
+></TABLE
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="x702.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>Home</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="x730.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>Python Distutils</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="a674.html"
+ACCESSKEY="U"
+>Up</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>FreeBSD's Ports System</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

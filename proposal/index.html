@@ -1,0 +1,909 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML
+><HEAD
+><TITLE
+>The Haskell Cabal</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.7"><LINK
+REL="NEXT"
+TITLE="The Haskell Package System: overview"
+HREF="x138.html"></HEAD
+><BODY
+CLASS="ARTICLE"
+BGCOLOR="#FFFFFF"
+TEXT="#000000"
+LINK="#0000FF"
+VLINK="#840084"
+ALINK="#0000FF"
+><DIV
+CLASS="ARTICLE"
+><DIV
+CLASS="TITLEPAGE"
+><H1
+CLASS="TITLE"
+><A
+NAME="AEN2"
+>The Haskell Cabal</A
+></H1
+><H2
+CLASS="SUBTITLE"
+>A Common Architecture for Building Applications and Tools</H2
+><H3
+CLASS="AUTHOR"
+><A
+NAME="AEN6"
+>Isaac Jones</A
+></H3
+><H3
+CLASS="AUTHOR"
+><A
+NAME="AEN9"
+>Simon Peyton Jones</A
+></H3
+><H3
+CLASS="AUTHOR"
+><A
+NAME="AEN12"
+>Simon Marlow</A
+></H3
+><H3
+CLASS="AUTHOR"
+><A
+NAME="AEN15"
+>Malcolm Wallace</A
+></H3
+><H3
+CLASS="AUTHOR"
+><A
+NAME="AEN18"
+>Ross Patterson</A
+></H3
+><DIV
+><DIV
+CLASS="ABSTRACT"
+><P
+></P
+><A
+NAME="AEN23"
+></A
+><P
+>The Haskell Library and Tools Infrastructure Project is an
+      effort to provide a framework for developers to more effectively
+      contribute their software to the Haskell community.  This
+      document specifies the <SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>Common Architecture for
+      Building Applications and Tools(<SPAN
+CLASS="APPLICATION"
+>Cabal</SPAN
+>)</I
+></SPAN
+>, which
+      contributes to the goals of the Haskell Library and Tools
+      Infrastructure Project.  </P
+><P
+>Specifically, the <SPAN
+CLASS="APPLICATION"
+>Cabal</SPAN
+> describes what a Haskell 
+	package is, how these packages interact with the language,
+	and what Haskell implementations must to do to support packages.
+	The <SPAN
+CLASS="APPLICATION"
+>Cabal</SPAN
+> also specifies some infrastructure (code) that makes
+	it easy for <SPAN
+CLASS="APPLICATION"
+>tool</SPAN
+> authors to build and distribute conforming packages.
+	</P
+><P
+>The <SPAN
+CLASS="APPLICATION"
+>Cabal</SPAN
+> is only one contribution to the Library Infrastructure project.
+	In particular, the <SPAN
+CLASS="APPLICATION"
+>Cabal</SPAN
+> says nothing about more global issues such as
+	how authors decide where in the module name space their library should live;
+	how users can find a package they want; how orphan packages find new owners;
+	and so on.</P
+><P
+> The <SPAN
+CLASS="APPLICATION"
+>Cabal</SPAN
+> has been discussed by the implementors of
+	<SPAN
+CLASS="APPLICATION"
+>GHC</SPAN
+>, <SPAN
+CLASS="APPLICATION"
+>Nhc98</SPAN
+>, and <SPAN
+CLASS="APPLICATION"
+>Hugs</SPAN
+>, all of whom are prepared to
+	implement it.  The proposal is now open for wider
+	debate. Please contribute by emailing
+	<CODE
+CLASS="EMAIL"
+>&#60;<A
+HREF="mailto:libraries@haskell.org"
+>libraries@haskell.org</A
+>&#62;</CODE
+>.</P
+><P
+></P
+></DIV
+></DIV
+><HR></DIV
+><DIV
+CLASS="TOC"
+><DL
+><DT
+><B
+>Table of Contents</B
+></DT
+><DT
+>1. <A
+HREF="index.html#HLI-GOALS"
+>The Haskell Package System: goals</A
+></DT
+><DD
+><DL
+><DT
+>1.1. <A
+HREF="index.html#AEN49"
+>Dramatis personae</A
+></DT
+><DT
+>1.2. <A
+HREF="index.html#EXAMPLE"
+>An example</A
+></DT
+></DL
+></DD
+><DT
+>2. <A
+HREF="x138.html"
+>The Haskell Package System: overview</A
+></DT
+><DD
+><DL
+><DT
+>2.1. <A
+HREF="x138.html#PACKAGE-DESCR"
+>Packages</A
+></DT
+><DT
+>2.2. <A
+HREF="x138.html#PACKAGES-AND-HASKELL"
+>Packages and the Haskell language</A
+></DT
+><DT
+>2.3. <A
+HREF="x138.html#AEN172"
+>Packages and compilers</A
+></DT
+><DT
+>2.4. <A
+HREF="x138.html#AEN202"
+>Package distributions</A
+></DT
+><DT
+>2.5. <A
+HREF="x138.html#AEN226"
+>The Setup script</A
+></DT
+></DL
+></DD
+><DT
+>3. <A
+HREF="x272.html"
+>What the compilers must implement</A
+></DT
+><DD
+><DL
+><DT
+>3.1. <A
+HREF="x272.html#AEN276"
+>Building and registering a package</A
+></DT
+><DD
+><DL
+><DT
+>3.1.1. <A
+HREF="x272.html#AEN296"
+>Global packages and user packages</A
+></DT
+><DT
+>3.1.2. <A
+HREF="x272.html#AEN313"
+>Exposed packages and hidden packages</A
+></DT
+><DT
+>3.1.3. <A
+HREF="x272.html#AEN325"
+>Registration invariants</A
+></DT
+></DL
+></DD
+><DT
+>3.2. <A
+HREF="x272.html#AEN337"
+>The <VAR
+CLASS="OPTION"
+>-package</VAR
+> compiler flag</A
+></DT
+><DT
+>3.3. <A
+HREF="x272.html#AEN351"
+>The interface to <B
+CLASS="COMMAND"
+>hc-pkg</B
+></A
+></DT
+><DT
+>3.4. <A
+HREF="x272.html#IPD"
+>Syntax of installed package description</A
+></DT
+></DL
+></DD
+><DT
+>4. <A
+HREF="x444.html"
+>The setup script</A
+></DT
+><DD
+><DL
+><DT
+>4.1. <A
+HREF="x444.html#PKG-DESC"
+>The package description</A
+></DT
+><DT
+>4.2. <A
+HREF="x444.html#SETUP-SPEC"
+>The setup script specification</A
+></DT
+><DD
+><DL
+><DT
+>4.2.1. <A
+HREF="x444.html#AEN504"
+><VAR
+CLASS="OPTION"
+>configure</VAR
+></A
+></DT
+><DT
+>4.2.2. <A
+HREF="x444.html#AEN529"
+><VAR
+CLASS="OPTION"
+>build</VAR
+></A
+></DT
+><DT
+>4.2.3. <A
+HREF="x444.html#AEN534"
+><VAR
+CLASS="OPTION"
+>install</VAR
+></A
+></DT
+><DT
+>4.2.4. <A
+HREF="x444.html#AEN575"
+><VAR
+CLASS="OPTION"
+>register</VAR
+> and
+	<VAR
+CLASS="OPTION"
+>unregister</VAR
+></A
+></DT
+></DL
+></DD
+><DT
+>4.3. <A
+HREF="x444.html#AEN589"
+>Examples</A
+></DT
+><DD
+><DL
+><DT
+>4.3.1. <A
+HREF="x444.html#AEN591"
+>Bob the Builder and Sam Sysadmin</A
+></DT
+><DT
+>4.3.2. <A
+HREF="x444.html#AEN599"
+>System packagers (Debian, RPM etc)</A
+></DT
+></DL
+></DD
+></DL
+></DD
+><DT
+>5. <A
+HREF="x611.html"
+>The <SPAN
+CLASS="APPLICATION"
+>Cabal</SPAN
+> simple build infrastructure</A
+></DT
+><DD
+><DL
+><DT
+>5.1. <A
+HREF="x611.html#AEN621"
+>Overview</A
+></DT
+><DT
+>5.2. <A
+HREF="x611.html#SBI-PKG-DESC"
+>Package description in the simple build infrastructure</A
+></DT
+><DT
+>5.3. <A
+HREF="x611.html#SBI-SETUP"
+><VAR
+CLASS="LITERAL"
+>Distribution.Simple</VAR
+></A
+></DT
+><DT
+>5.4. <A
+HREF="x611.html#AEN803"
+>The Makefile route</A
+></DT
+></DL
+></DD
+><DT
+>A. <A
+HREF="a818.html"
+>Layered Tools</A
+></DT
+><DT
+>B. <A
+HREF="a825.html"
+>Related Systems</A
+></DT
+><DD
+><DL
+><DT
+>B.1. <A
+HREF="a825.html#LIP-APPENDIX-DEBIAN"
+>Debian</A
+></DT
+><DT
+>B.2. <A
+HREF="x853.html"
+>Python Distutils</A
+></DT
+><DT
+>B.3. <A
+HREF="x863.html"
+><SPAN
+CLASS="APPLICATION"
+>CPAN</SPAN
+> and Boost</A
+></DT
+><DT
+>B.4. <A
+HREF="x881.html"
+>FreeBSD's Ports System</A
+></DT
+><DT
+>B.5. <A
+HREF="x886.html"
+>The <SPAN
+CLASS="APPLICATION"
+>XEmacs</SPAN
+> Packaging
+System</A
+></DT
+><DT
+>B.6. <A
+HREF="x895.html"
+>Make-Based Systems</A
+></DT
+><DT
+>B.7. <A
+HREF="x904.html"
+><SPAN
+CLASS="APPLICATION"
+>hmake</SPAN
+></A
+></DT
+></DL
+></DD
+></DL
+></DIV
+><DIV
+CLASS="SECT1"
+><H1
+CLASS="SECT1"
+><A
+NAME="HLI-GOALS"
+>1. The Haskell Package System: goals</A
+></H1
+><P
+>The Haskell Package System (<SPAN
+CLASS="APPLICATION"
+>Cabal</SPAN
+>) has the following main goal:
+to specify a standard way in which a Haskell <SPAN
+CLASS="APPLICATION"
+>tool</SPAN
+> can be packaged, so that it is
+easy for consumers to use it, or re-package it, 
+regardless of the Haskell implementation or installation platform.</P
+><P
+>The <SPAN
+CLASS="APPLICATION"
+>Cabal</SPAN
+> also
+supports <SPAN
+CLASS="APPLICATION"
+>tool</SPAN
+> authors by providing an infrastructure that automates the
+process of building and packaging simple <SPAN
+CLASS="APPLICATION"
+>tool</SPAN
+>s.  It is not necessary to use
+this code&mdash;indeed complex libraries may exceed its abilities&mdash;but it should
+handle many cases with no trouble.</P
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="AEN49"
+>1.1. Dramatis personae</A
+></H2
+><P
+>The <SPAN
+CLASS="APPLICATION"
+>Cabal</SPAN
+> serves a number of people in different ways:
+
+<P
+></P
+><UL
+><LI
+><P
+> <SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>Joe User</I
+></SPAN
+> is simply a Haskell user.  He does not download new packages.  Nevertheless,
+he needs to know about his Haskell compiler's <VAR
+CLASS="OPTION"
+>-package</VAR
+> flag (see <A
+HREF="x272.html"
+>Section 3</A
+>).
+	    </P
+></LI
+><LI
+><P
+> <SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>Bob the Builder</I
+></SPAN
+> and <SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>Sam Sysadmin</I
+></SPAN
+> both download, build,
+  and install new packages. The only difference between the two is that Sam has root permission,
+  and can install packages in more globally-visible places.
+	    </P
+></LI
+><LI
+><P
+><SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>Peter Packager</I
+></SPAN
+> builds operating
+system specific install files (e.g. .msi .rpm .deb) from packages
+supplied by Marcus or Angela.  We might also call him <SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>Roland
+RPM</I
+></SPAN
+>, <SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>Donald Debian</I
+></SPAN
+>, and
+<SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>Willie Windows</I
+></SPAN
+> who build Linux RPM, Debian, and
+Windows installer packages respectively (this list is not exhaustive).
+They do this as a service to their platform's community, and may know
+little or nothing about the internal details of the Haskell packages
+they are wrapping up.  </P
+></LI
+><LI
+><P
+><SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>Isabella Installer</I
+></SPAN
+> installs
+binary packages supplied by Peter or Angela, (or Rowland, Donald, and
+Willie).  Isabella requires only a Haskell compiler/interpreter.  She
+can use rpm to install packages by Rowland.  She cannot or will not
+build the packages herself, so she relies on Peter to provide them.
+She won't use the Setup script directly from Angela, but she might use
+a layered tool like <SPAN
+CLASS="APPLICATION"
+>haskell-install</SPAN
+>, which does all
+the work of downloading and installing simple
+packages.</P
+></LI
+><LI
+><P
+> <SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>Angela Author</I
+></SPAN
+> wants to write a simple Haskell <SPAN
+CLASS="APPLICATION"
+>tool</SPAN
+>, and distribute it with 
+minimum fuss, in such a way that all the above folk can easily use it.
+	    </P
+></LI
+><LI
+><P
+> <SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>Marcus Makefile</I
+></SPAN
+> is like Angela, but more sophisticated.  He has a complicated <SPAN
+CLASS="APPLICATION"
+>tool</SPAN
+>,
+and uses makefiles.  Still, he wants to arrange that Roland, Donald, Bob, Sam, and Joe don't need to know
+about his internal complexity.
+	    </P
+></LI
+></UL
+>
+
+We describe Angela and Marcus as <SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>producers</I
+></SPAN
+> of
+their packages, and all the others as package
+<SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>consumers</I
+></SPAN
+>.
+      </P
+><P
+>Note that though these users all have different names, it is very
+common for their roles to overlap when it comes to real people.  For
+instance, if Bob builds packages for himself, he becomes Joe once
+they're built.  These personas are <SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>use cases</I
+></SPAN
+>, and
+not meant to represent completely distinct individuals.</P
+></DIV
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="EXAMPLE"
+>1.2. An example</A
+></H2
+><P
+>To give the idea, here is a simple example.  Angela has written a couple of Haskell modules that
+implement sets and bags; she wants to distribute them to Bob as a package called,
+say, <VAR
+CLASS="LITERAL"
+>angela-coll</VAR
+>.  Let's say that the modules are
+<VAR
+CLASS="LITERAL"
+>Data.Set</VAR
+>, <VAR
+CLASS="LITERAL"
+>Data.Bag</VAR
+>, <VAR
+CLASS="LITERAL"
+>Angela.Internals</VAR
+>.
+(The <SPAN
+CLASS="APPLICATION"
+>Cabal</SPAN
+> says nothing about how Angela decides where in the name space to put her modules.)
+Angela only wants to expose the first two to Bob; the <VAR
+CLASS="LITERAL"
+>Angela.Internals</VAR
+> module is (as its
+name suggests) internal to the package.</P
+><P
+>Angela decides to use the simple build infrastructure that the <SPAN
+CLASS="APPLICATION"
+>Cabal</SPAN
+> provides.  She is working in
+a directory <TT
+CLASS="FILENAME"
+>~/coll</TT
+>.  In there she puts the modules, in sub-directories
+driven by their module name: <TT
+CLASS="FILENAME"
+>~/coll/Data/Set.hs</TT
+>,
+ <TT
+CLASS="FILENAME"
+>~/coll/Data/Bag.hs</TT
+>,
+ and <TT
+CLASS="FILENAME"
+>~/coll/Angela/Internals.hs</TT
+>.
+Next, she writes
+a <SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>package description</I
+></SPAN
+>, which she puts in <TT
+CLASS="FILENAME"
+>~/coll/</TT
+><TT
+CLASS="FILENAME"
+>Setup.description</TT
+>:
+<PRE
+CLASS="PROGRAMLISTING"
+>Name: angela-coll
+Version: 0.1.1.1.1-foo-bar-bang
+License: LGPL
+Copyright: Copyright (c) 2004, Angela Author
+Exposed-Modules: A, B, B.C</PRE
+>
+She also creates a small Haskell file <TT
+CLASS="FILENAME"
+>~/coll/Setup.lhs</TT
+> as follows:
+<PRE
+CLASS="PROGRAMLISTING"
+>  #! /usr/bin/env runhugs
+
+  &#62; module Main where
+  &#62; import Distribution.Simple( defaultMain )
+  &#62; main = defaultMain</PRE
+>
+
+This library implements the <SPAN
+CLASS="APPLICATION"
+>Cabal</SPAN
+> simple build infrastructure.</P
+><P
+>The first line arranges that when Angela, (or Joe, or Sam, etc.)
+executes <TT
+CLASS="FILENAME"
+>Setup.lhs</TT
+> as a shell script, the shell
+will invoke <B
+CLASS="COMMAND"
+>runhugs</B
+>, which will in turn run
+<VAR
+CLASS="LITERAL"
+>mainn</VAR
+> imported from the library
+<VAR
+CLASS="LITERAL"
+>Distribution.Simple</VAR
+>.  </P
+><P
+>It is not necessary that the script be run this way, it is just
+a convinient way to run it.  Sam or Joe may choose to compile the
+setup script into an executable with NHC or GHC and then run it
+directly (it is a literate Haskell script so that it can be compiled
+without the first line causing a syntax error).  Another option is for
+that first line to read <PRE
+CLASS="PROGRAMLISTING"
+>!# /usr/bin/env runhaskell</PRE
+>
+where <B
+CLASS="COMMAND"
+>runhaskell</B
+> is a symlink to
+<B
+CLASS="COMMAND"
+>runhugs</B
+>, <B
+CLASS="COMMAND"
+>runghc</B
+>, or
+<B
+CLASS="COMMAND"
+>runnhc</B
+>.</P
+><P
+> Now she is ready to go. She types:
+<PRE
+CLASS="PROGRAMLISTING"
+>  ./Setup.lhs configure --ghc
+  ./Setup.lhs build
+  ./Setup.lhs sdist</PRE
+>
+The first line readies the system to build the <SPAN
+CLASS="APPLICATION"
+>tool</SPAN
+> using <SPAN
+CLASS="APPLICATION"
+>GHC</SPAN
+>; for example, it checks that <SPAN
+CLASS="APPLICATION"
+>GHC</SPAN
+> exists on the system.
+The second line checks that
+the <SPAN
+CLASS="APPLICATION"
+>tool</SPAN
+> does indeed build flawlessly.  (At this point she can write and execute tests, as we discuss later.)
+The third line wraps up the package as a source distribution, making the file <TT
+CLASS="FILENAME"
+>~/coll/angela-coll-1.tar.gz</TT
+>.</P
+><P
+>Angela emails the tar file to Bob, who untars it into <TT
+CLASS="FILENAME"
+>tmp/coll</TT
+>.
+He <B
+CLASS="COMMAND"
+>cd</B
+>'s to that directory and types
+<PRE
+CLASS="PROGRAMLISTING"
+>  ./Setup.lhs configure --ghc
+  ./Setup.lhs build
+  ./Setup.lhs install</PRE
+>
+He's all done. Now in his Haskell programs, Bob can simply <VAR
+CLASS="LITERAL"
+>import</VAR
+> the new
+modules <VAR
+CLASS="LITERAL"
+>Data.Set</VAR
+> and <VAR
+CLASS="LITERAL"
+>Data.Bag</VAR
+>. He does not need to give extra flags
+to <SPAN
+CLASS="APPLICATION"
+>GHC</SPAN
+> to tell it to look for Angela's modules; they are there automatically.
+If Angela used the same module names as someone else, Bob may need finer control: see <A
+HREF="x272.html"
+>Section 3</A
+>.</P
+><P
+>If Angela wrote her modules in a suitably portable variant of Haskell,
+Bob could also have said <VAR
+CLASS="OPTION"
+>--hugs</VAR
+> or
+<VAR
+CLASS="OPTION"
+>--nhc</VAR
+> in his <VAR
+CLASS="OPTION"
+>configure</VAR
+> line, and the
+package would have been built and installed for those compilers
+instead.
+      </P
+></DIV
+></DIV
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>&nbsp;</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+>&nbsp;</TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="x138.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>&nbsp;</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+>&nbsp;</TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>The Haskell Package System: overview</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

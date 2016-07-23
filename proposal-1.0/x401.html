@@ -1,0 +1,218 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML
+><HEAD
+><TITLE
+>Development Plan</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.7"><LINK
+REL="HOME"
+TITLE="Library Infrastructure Project"
+HREF="index.html"><LINK
+REL="PREVIOUS"
+TITLE="Means of Distribution
+  and Layered Tools"
+HREF="x394.html"><LINK
+REL="NEXT"
+TITLE="Related Systems"
+HREF="a426.html"></HEAD
+><BODY
+CLASS="SECTION"
+BGCOLOR="#FFFFFF"
+TEXT="#000000"
+LINK="#0000FF"
+VLINK="#840084"
+ALINK="#0000FF"
+><DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="3"
+ALIGN="center"
+>Library Infrastructure Project</TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="bottom"
+><A
+HREF="x394.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="80%"
+ALIGN="center"
+VALIGN="bottom"
+></TD
+><TD
+WIDTH="10%"
+ALIGN="right"
+VALIGN="bottom"
+><A
+HREF="a426.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="SECTION"
+><H1
+CLASS="SECTION"
+><A
+NAME="LIP-PLAN"
+>7. Development Plan</A
+></H1
+><P
+>On a high level, this is the order in which we should approach
+the tasks:</P
+><P
+></P
+><UL
+><LI
+><P
+>We should agree first on the high-level design of the
+<SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>packaging system</I
+></SPAN
+> (<A
+HREF="x190.html#LIP-PACKAGING"
+>Section 4.3</A
+>), since this will require a consensus from
+the Haskell Implementation authors.  Details such as the format of the database and
+the exact API will evolve over the course of the project.  The author
+views this as the top priority.</P
+></LI
+><LI
+><P
+>In parallel, we should decide on the command-line interface for the
+Setup script (<A
+HREF="x75.html#LIP-COMMAND"
+>Section 3.3</A
+>), and the particulars of
+how it is invoked on various systems.</P
+></LI
+><LI
+><P
+>The first priority for Build and Install support
+should be pure Haskell modules, and reasonable support for wrapping
+make-based systems that are currently more highly evolved.</P
+></LI
+><LI
+><P
+>At this point, it may be possible to collect
+libraries, convert them to use the Library Infrastructure Project, and
+make them available at a central repository.</P
+></LI
+><LI
+><P
+>The next priority should be tools to assist in the
+creation and maintenance of operating-system packages (Debian and RPM
+for instance).</P
+></LI
+><LI
+><P
+>Once these features are in place, it makes sense to
+augment the <CODE
+CLASS="CLASSNAME"
+>Distribution</CODE
+> module with more complex tool support like
+preprocessors and external libraries.</P
+></LI
+><LI
+><P
+>Now we can add more fun features like GUI front-ends,
+downloading tools, package security tools, etc.</P
+></LI
+></UL
+><P
+>The author has implemented a "toy" prototype system that fulfills
+many of the features outlined above.  It uses <SPAN
+CLASS="APPLICATION"
+>hmake</SPAN
+> by running it as
+an external command.  It can build Debian packages and interfaces with
+the Common Debian Build System.  It can prepare installations for Hugs
+and GHC.  The author decided to stop implementation, however, until
+details about the Packaging system (<A
+HREF="x190.html#LIP-PACKAGING"
+>Section 4.3</A
+>)
+are worked through.</P
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="x394.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>Home</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="a426.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>Means of Distribution
+  and Layered Tools</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+>&nbsp;</TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>Related Systems</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

@@ -1,0 +1,504 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML
+><HEAD
+><TITLE
+>A Solution for Haskell in Haskell</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.7"><LINK
+REL="HOME"
+TITLE="Library Infrastructure Project"
+HREF="index.html"><LINK
+REL="PREVIOUS"
+TITLE="Issues Facing Developers"
+HREF="x35.html"><LINK
+REL="NEXT"
+TITLE="Distribution Module"
+HREF="x190.html"></HEAD
+><BODY
+CLASS="SECTION"
+BGCOLOR="#FFFFFF"
+TEXT="#000000"
+LINK="#0000FF"
+VLINK="#840084"
+ALINK="#0000FF"
+><DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="3"
+ALIGN="center"
+>Library Infrastructure Project</TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="bottom"
+><A
+HREF="x35.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="80%"
+ALIGN="center"
+VALIGN="bottom"
+></TD
+><TD
+WIDTH="10%"
+ALIGN="right"
+VALIGN="bottom"
+><A
+HREF="x190.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="SECTION"
+><H1
+CLASS="SECTION"
+><A
+NAME="LIP-IN-HASKELL"
+>3. A Solution for Haskell in Haskell</A
+></H1
+><P
+>As mentioned above, the foremost user interface for this
+  system will be a Haskell program to be executed by the default
+  Haskell Implementation. This Haskell program, <B
+CLASS="COMMAND"
+>Setup.lhs</B
+>, will
+  perform the tasks of building the package (where necessary),
+  installing the package, and making the package available to the
+  system.</P
+><DIV
+CLASS="SECTION"
+><H2
+CLASS="SECTION"
+><A
+NAME="LIP-MODULES"
+>3.1. The Module Design</A
+></H2
+><P
+>I propose a set of modules based on these three major tasks:</P
+><P
+></P
+><UL
+><LI
+><P
+><CODE
+CLASS="CLASSNAME"
+>Distribution.Build</CODE
+>: For tasks of preparing the package for
+  installation, including tasking compilers and creating packages for
+  systems like Debian (<A
+HREF="x190.html#LIP-BUILD"
+>Section 4.1</A
+>).</P
+></LI
+><LI
+><P
+><CODE
+CLASS="CLASSNAME"
+>Distribution.Install</CODE
+>: For moving the distribution files
+  into place (<A
+HREF="x190.html#LIP-INSTALL"
+>Section 4.2</A
+>).</P
+></LI
+><LI
+><P
+><CODE
+CLASS="CLASSNAME"
+>Distribution.Package</CODE
+>: For
+  accessing the database of installed packages, versions, etc. Might
+  also be responsible for removing packages (<A
+HREF="x190.html#LIP-PACKAGING"
+>Section 4.3</A
+>).</P
+></LI
+><LI
+><P
+><CODE
+CLASS="CLASSNAME"
+>Distribution.Config</CODE
+>: For discovering details about the
+  configuration of the target system not covered by the database of
+  installed packages.  These are tasks typically performed by tools
+  such as <SPAN
+CLASS="APPLICATION"
+>autoconf</SPAN
+> (<A
+HREF="x190.html#LIP-CONFIGURE"
+>Section 4.6</A
+>).</P
+></LI
+><LI
+><P
+><CODE
+CLASS="CLASSNAME"
+>Distribution</CODE
+>: For general
+  purpose elements that don't fit into any of the above
+  categories.</P
+></LI
+></UL
+></DIV
+><DIV
+CLASS="SECTION"
+><H2
+CLASS="SECTION"
+><A
+NAME="LIP-WHY-HASKELL"
+>3.2. But Why Should We Use Haskell?</A
+></H2
+><P
+>It is very appropriate that this solution be implemented in
+Haskell:</P
+><P
+></P
+><UL
+><LI
+><P
+>Haskell runs on all the systems of interest.</P
+></LI
+><LI
+><P
+>Haskell's standard libraries should include a rich set of operating
+system operations needed for the task.  These can abstract-away the
+differences between systems in a way that is not possible for
+Make-based tools.</P
+></LI
+><LI
+><P
+>Haskell is a great language for many things, including tasks
+typically relegated to languages like Python.  Building, installing,
+and managing packages is a perfect proving ground for these tasks, and
+can help us to discover weaknesses in Haskell or its libraries that
+prevent it from breaking into this "market".  A positive side-effect
+of this project might be to make Haskell more suitable for "scripting"
+tasks.</P
+></LI
+><LI
+><P
+>Likewise, each piece of the project (Building, Installing, and
+Packaging) can be leveraged elsewhere if we make them into
+libraries.</P
+></LI
+><LI
+><P
+>Make is not particularly good for parsing, processing, and sharing
+meta-information about packages.  The availability of this information
+to Haskell systems (including compilers, interpreters, and other
+tools) is useful.  Unlike Make, Haskell can also reuse unrelated
+algorithms, parsers, and other libraries that have been developed in
+the past.</P
+></LI
+><LI
+><P
+><SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>Dogfooding</I
+></SPAN
+>, the act of using the tools you
+develop, is a healthy policy.</P
+></LI
+></UL
+></DIV
+><DIV
+CLASS="SECTION"
+><H2
+CLASS="SECTION"
+><A
+NAME="LIP-COMMAND"
+>3.3. Setup.lhs Command-Line Interface</A
+></H2
+><P
+>The purpose of the Setup script is to provide a standard
+     interface to end users and layered tools.  For any particular
+     application, the script may be implemented in a variety of ways:
+     For pure Haskell applications, the <CODE
+CLASS="CLASSNAME"
+>Distribution</CODE
+> module should perform all
+     of the heavy lifting, requiring only a few lines of code from the
+     developer.  For applications that feel they need a complete and
+     robust make-based system, the Setup script can wrap such a
+     system.</P
+><P
+>One of the early design tasks of this project should be to decide
+     on a format for the command-line interface of the Setup script,
+     but here is an example of how it might behave:</P
+><DIV
+CLASS="TABLE"
+><A
+NAME="AEN125"
+></A
+><P
+><B
+>Table 1. Setup.lhs interface</B
+></P
+><TABLE
+BORDER="1"
+FRAME="border"
+RULES="all"
+CLASS="CALSTABLE"
+><COL><COL><TBODY
+><TR
+><TD
+><B
+CLASS="COMMAND"
+>./Setup.lhs info</B
+></TD
+><TD
+><P
+>Output package configuration
+                    information</P
+></TD
+></TR
+><TR
+><TD
+><B
+CLASS="COMMAND"
+>./Setup.lhs build all</B
+></TD
+><TD
+><P
+>Compile / prepare this package for
+                    all installed Haskell Implementations</P
+></TD
+></TR
+><TR
+><TD
+><B
+CLASS="COMMAND"
+>./Setup.lhs build default</B
+></TD
+><TD
+><P
+>Compile / prepare this package for
+                    the default Haskell Implementation</P
+></TD
+></TR
+><TR
+><TD
+><B
+CLASS="COMMAND"
+>./Setup.lhs build {<SPAN
+CLASS="APPLICATION"
+>NHC</SPAN
+>,<SPAN
+CLASS="APPLICATION"
+>GHC</SPAN
+>,<SPAN
+CLASS="APPLICATION"
+>Hugs</SPAN
+>, ...}
+     </B
+></TD
+><TD
+><P
+>Compile / prepare this package for
+                    the given Haskell Implementation</P
+></TD
+></TR
+><TR
+><TD
+><B
+CLASS="COMMAND"
+>./Setup.lhs install {all,default,<SPAN
+CLASS="APPLICATION"
+>NHC</SPAN
+>,<SPAN
+CLASS="APPLICATION"
+>GHC</SPAN
+>,<SPAN
+CLASS="APPLICATION"
+>Hugs</SPAN
+>,...}</B
+></TD
+><TD
+><P
+>Install this package.</P
+></TD
+></TR
+><TR
+><TD
+><B
+CLASS="COMMAND"
+>./Setup.lhs register
+                    {all,default,<SPAN
+CLASS="APPLICATION"
+>NHC</SPAN
+>,<SPAN
+CLASS="APPLICATION"
+>GHC</SPAN
+>,<SPAN
+CLASS="APPLICATION"
+>Hugs</SPAN
+>,...}</B
+></TD
+><TD
+><P
+>Register this package with the
+                    package management system (making it available to
+                    the given Haskell Implementation.)</P
+></TD
+></TR
+><TR
+><TD
+><B
+CLASS="COMMAND"
+>./Setup.lhs bdist_{deb,rpm,...}</B
+></TD
+><TD
+><P
+>Create a binary distribution package
+                    for Debian, RPM, etc.</P
+></TD
+></TR
+><TR
+><TD
+><B
+CLASS="COMMAND"
+>./Setup.lhs sdist</B
+></TD
+><TD
+><P
+>Create a source distribution
+                    archive.</P
+></TD
+></TR
+><TR
+><TD
+><B
+CLASS="COMMAND"
+>./Setup.lhs test</B
+></TD
+><TD
+><P
+>Run the package's test suite.</P
+></TD
+></TR
+></TBODY
+></TABLE
+></DIV
+><P
+>Other commands may be available, and it is important to
+     anticipate commands that may some day be desirable.</P
+></DIV
+><DIV
+CLASS="SECTION"
+><H2
+CLASS="SECTION"
+><A
+NAME="LIP-SCRIPT-EXAMPLE"
+>3.4. An Example Setup.lhs Script</A
+></H2
+><P
+>Here's what the setup script might look like for HUnit, which
+  has no complex dependencies.</P
+><PRE
+CLASS="PROGRAMLISTING"
+>#!/usr/bin/env haskell
+import Distribution.Core
+import Distribution.Package
+
+toolInfo = (defaultPackage "HUnit"
+                           (NumberedVersion 1 0 0))
+	   {haskellSources=[
+                    "HUnitLang98.lhs","HUnitLangExc.lhs", "Info.lhs",
+                    "Terminal.lhs", "HUnitTest98.lhs", "TerminalTest.lhs",
+                    "HUnit.lhs", "HUnitTestBase.lhs", "HUnitBase.lhs",
+                    "HUnitTestExc.lhs", "HUnitLang.lhs", "HUnitText.lhs",
+                    "Setup.lhs"],
+	    docs = ["Example.hs", "Guide.html", "License", "README"]}
+
+main = defaultMain toolInfo id id
+-- Those last to parameters might be pre-install and post-install functions</PRE
+><P
+><CODE
+CLASS="FUNCTION"
+>defaultMain</CODE
+> would implement all of the
+standard command-line flags, and defaultPackage is a template with
+sane default values for most fields.</P
+></DIV
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="x35.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>Home</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="x190.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>Issues Facing Developers</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+>&nbsp;</TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>Distribution Module</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

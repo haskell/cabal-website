@@ -1,0 +1,408 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML
+><HEAD
+><TITLE
+>Use Cases</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.7"><LINK
+REL="HOME"
+TITLE="Library Infrastructure Project"
+HREF="index.html"><LINK
+REL="PREVIOUS"
+TITLE="Distribution Module"
+HREF="x190.html"><LINK
+REL="NEXT"
+TITLE="Means of Distribution
+  and Layered Tools"
+HREF="x393.html"></HEAD
+><BODY
+CLASS="SECTION"
+BGCOLOR="#FFFFFF"
+TEXT="#000000"
+LINK="#0000FF"
+VLINK="#840084"
+ALINK="#0000FF"
+><DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="3"
+ALIGN="center"
+>Library Infrastructure Project</TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="bottom"
+><A
+HREF="x190.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="80%"
+ALIGN="center"
+VALIGN="bottom"
+></TD
+><TD
+WIDTH="10%"
+ALIGN="right"
+VALIGN="bottom"
+><A
+HREF="x393.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="SECTION"
+><H1
+CLASS="SECTION"
+><A
+NAME="LIP-USE-CASES"
+>5. Use Cases</A
+></H1
+><P
+><SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>End User:</I
+></SPAN
+> The end user has identified a
+  Haskell package (tool or library) that she wants to use.</P
+><P
+></P
+><UL
+><LI
+><P
+>The end user installs packages with a
+  operating-system-specific package management system like RPM, dpkg,
+  or FreeBSD's Ports collection.</P
+></LI
+><LI
+><P
+>If no such packaging system is available on her
+  system, she, can run <B
+CLASS="COMMAND"
+>./Setup.lhs install nhc</B
+> or
+  <B
+CLASS="COMMAND"
+>./Setup.lhs install hugs</B
+> to build, install, and
+  register an <SPAN
+CLASS="APPLICATION"
+>NHC</SPAN
+> or <SPAN
+CLASS="APPLICATION"
+>Hugs</SPAN
+> version of the program (for
+  instance).</P
+></LI
+></UL
+><P
+><SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>Packager:</I
+></SPAN
+> A packager is someone who makes
+operating-system-specific packages so that an end-user can have an
+easier time installing them on her own system.  For each platform,
+there should be one or more packager.</P
+><P
+></P
+><UL
+><LI
+><P
+>The packager can run
+  <B
+CLASS="COMMAND"
+>./Setup.lhs bdist_deb</B
+> to build a skeleton Debian
+  package (for instance) for each of the installed Haskell Implementations.  This
+  might generate Debian packages like <SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>hunit-hugs</I
+></SPAN
+>,
+  <SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>hunit-ghc</I
+></SPAN
+>, <SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>hunit-prof-ghc</I
+></SPAN
+>,
+  <SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>hunit-prof-nhc</I
+></SPAN
+>.</P
+></LI
+></UL
+><P
+><SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>3rd Party Author:</I
+></SPAN
+> A 3rd party author is a
+Haskell developer (distinct from the Haskell Implementation authors or end users) who
+wishes to distribute a library or application that he has developed in
+Haskell.</P
+><P
+></P
+><UL
+><LI
+><P
+>The 3rd Party Author writes a
+  <B
+CLASS="COMMAND"
+>Setup.lhs</B
+> program.  <B
+CLASS="COMMAND"
+>Setup.lhs</B
+>
+  imports elements from the <CODE
+CLASS="CLASSNAME"
+>Distribution</CODE
+> module which does most of the hard
+  work.  A very common case, which should be our first priority, is a
+  pure Haskell 98 module that needn't interface with any external
+  systems.  In this case the author only has to include the name of
+  the program, the version, and the source files.  He can then call
+  <CODE
+CLASS="FUNCTION"
+>Distribution.defaultMain</CODE
+> to create an
+  executable script with the proper command-line flags that knows how
+  to interface with the <CODE
+CLASS="CLASSNAME"
+>Distribution.Package</CODE
+> module.</P
+></LI
+><LI
+><P
+>Should he have a more complex program (one which
+  perhaps depends on systems external to Haskell), then the <CODE
+CLASS="CLASSNAME"
+>Distribution</CODE
+> module
+  could output a Makefile to be used in 'fptools' or Yale's system
+  (see <A
+HREF="x495.html"
+>Section A.6</A
+>). </P
+></LI
+><LI
+><P
+>Should he not want to migrate from his own build
+  system, he could write a <B
+CLASS="COMMAND"
+>Setup.lhs</B
+> script to wrap
+  the build system so that it conforms to the standard command-line
+  interface.</P
+></LI
+></UL
+><P
+><SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>Haskell Implementation Authors</I
+></SPAN
+>:</P
+><P
+></P
+><UL
+><LI
+><P
+>Haskell Implementation authors must conform to an
+  agreed-upon <CODE
+CLASS="CLASSNAME"
+>Distribution.Package</CODE
+> interface.</P
+></LI
+><LI
+><P
+>This may include writing functionality so the
+    compiler can be asked questions about itself.</P
+></LI
+><LI
+><P
+>This may also include altering compilers to read
+    <TT
+CLASS="FILENAME"
+>/etc/haskellPackages.conf</TT
+> (for instance) to
+    discover what packages are installed or where to look for
+    imports.</P
+></LI
+><LI
+><P
+>Include the <CODE
+CLASS="CLASSNAME"
+>Distribution</CODE
+> module with the Haskell Implementations (in exchange, we
+  can hopefully remove some libraries that are currently included with
+  the Haskell Implementations).</P
+></LI
+></UL
+><P
+><SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>Random Haskell Programmer</I
+></SPAN
+>:</P
+><P
+></P
+><UL
+><LI
+><P
+>A random Haskell programmer can use the
+  <CODE
+CLASS="CLASSNAME"
+>Distribution</CODE
+> module as a means to create layered tools that download, build,
+  or install packages.  For instance:
+
+<P
+></P
+><UL
+><LI
+><P
+><SPAN
+CLASS="APPLICATION"
+>haskell-config</SPAN
+> is an example of a layered tool which interfaces with
+  the <CODE
+CLASS="CLASSNAME"
+>Distribution</CODE
+> module.  This tool gives the end user access to the database
+  of installed applications.</P
+></LI
+><LI
+><P
+>A Graphical User Interface could be layered on top
+  of the Setup script to give installation a better look-and-feel
+  according to the target platform.</P
+></LI
+><LI
+><P
+>The <CODE
+CLASS="CLASSNAME"
+>Distribution</CODE
+> module could be augmented with an online
+  repository of libraries (see <A
+HREF="x463.html"
+>Section A.3</A
+>), and a layered tool might
+  perform the searching and downloading functionality of the
+  installation process.</P
+></LI
+><LI
+><P
+>Debuggers often need to locate the source code to a
+  library module in order to instrument them.</P
+></LI
+><LI
+><P
+>Source code editors or browsers could benefit from
+  being able to locate related source code on the user's
+  system.</P
+></LI
+></UL
+>&#13;</P
+></LI
+></UL
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="x190.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>Home</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="x393.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>Distribution Module</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+>&nbsp;</TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>Means of Distribution
+  and Layered Tools</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

@@ -1,0 +1,324 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML
+><HEAD
+><TITLE
+>Issues Facing Developers</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.7"><LINK
+REL="HOME"
+TITLE="Library Infrastructure Project"
+HREF="index.html"><LINK
+REL="PREVIOUS"
+TITLE="Library Infrastructure Project"
+HREF="index.html"><LINK
+REL="NEXT"
+TITLE="A Solution for Haskell in Haskell"
+HREF="x75.html"></HEAD
+><BODY
+CLASS="SECTION"
+BGCOLOR="#FFFFFF"
+TEXT="#000000"
+LINK="#0000FF"
+VLINK="#840084"
+ALINK="#0000FF"
+><DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="3"
+ALIGN="center"
+>Library Infrastructure Project</TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="bottom"
+><A
+HREF="index.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="80%"
+ALIGN="center"
+VALIGN="bottom"
+></TD
+><TD
+WIDTH="10%"
+ALIGN="right"
+VALIGN="bottom"
+><A
+HREF="x75.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="SECTION"
+><H1
+CLASS="SECTION"
+><A
+NAME="LIP-PROBLEMS"
+>2. Issues Facing Developers</A
+></H1
+><P
+>There are a number of issues facing developers of Haskell
+  software when they decide to deploy their work.  </P
+><P
+></P
+><UL
+><LI
+><P
+>Binary incompatibility between Haskell
+  Implementations and between versions of some implementations make it
+  very difficult to distribute binary libraries: if they are expected
+  to work together, all of the libraries on a user's system need to be
+  built with the same compiler.  This makes it a virtual necessity
+  that the source code for a Haskell library be distributed to the end
+  user of that library, although other options exist for systems like
+  Debian (<A
+HREF="a425.html#LIP-APPENDIX-DEBIAN"
+>Section A.1</A
+>) which have
+  auto-builders. </P
+></LI
+><LI
+><P
+>Compilation is difficult: It was noted above that it
+  is usually necessary to distribute the source code for Haskell tools
+  to the end user.  The end user has to compile each Haskell tool they
+  use, but the task of compilation is complicated by a plethora of
+  preprocessors (such as arrowp and greencard) and interfaces with
+  non-Haskell libraries (such as Java, X, C, and GTK).  Further, there
+  is no way to formally express dependencies between Haskell tools, so
+  the users have to visit the home pages of the projects they're
+  interested in and find the dependencies.  </P
+></LI
+><LI
+><P
+>The Haskell Implementations are not completely compatible either:
+  They support different extensions, different libraries, different
+  binary formats, different flags, and different packaging
+  systems.</P
+></LI
+><LI
+><P
+>Given that compilation is difficult in and of
+  itself, it is further complicated by a wide variety of target
+  platforms that it is desirable to support.  These systems may treat
+  files differently (copying of files, path names) or have different
+  defaults for where to put compiled files or source code to make them
+  available to the user.  The variety of Haskell Implementations and target platforms
+  make writing of a generic build system that "just works" very
+  difficult.</P
+></LI
+><LI
+><P
+>Having managed to compile and install all of the
+  Haskell software they need, if a user installs a new compiler (or
+  version thereof), all this work needs to be redone.  All of the
+  libraries on the system will have to be recompiled to match the
+  version of that compiler (this is apparently a bigger problem with
+  GHC than with NHC, and not much of a problem with
+  Hugs.)</P
+></LI
+></UL
+><P
+>Compare this to the experience of installing a typical library
+  or tool written in C or C++ on a Debian GNU/Linux system: The user
+  consults a database of known programs (which is stored on her
+  computer) and runs a single command to install that package.  The
+  package management tool figures out the dependencies, downloads all
+  dependencies downloads the package, and installs them in the proper
+  order.  The packages are already compiled by a set of central
+  servers.  In fact, there is no reason that this kind of interface
+  can't be available to the end user except for the difficulty of
+  creating binary packages. (See <A
+HREF="x35.html#LIP-PROBLEMS-PACKAGERS"
+>Section 2.1</A
+>) </P
+><DIV
+CLASS="SECTION"
+><H2
+CLASS="SECTION"
+><A
+NAME="LIP-PROBLEMS-PACKAGERS"
+>2.1. Issues Facing Packagers</A
+></H2
+><P
+>There are roughly speaking, three different kinds of
+  operating-system package systems: source distributions (FreeBSD,
+  Gentoo), binary distributions (Debian, RPM), and language-specific
+  distributions (CPAN, XEmacs).  What we are proposing to create is a
+  language-specific distribution that assists in the creation of both
+  source and binary packages for other operating systems.</P
+><P
+>As mentioned above, it is possible to create an operating
+  system package for a Haskell library.  Indeed, its no harder to
+  create a Haskell package than any other kind of package; Haskell
+  packages are harder to maintain, however.  For instance, in the
+  Debian GNU/Linux system (<A
+HREF="a425.html#LIP-APPENDIX-DEBIAN"
+>Section A.1</A
+>),
+  which is a binary distribution, there is currently no way to express
+  that a library needs to be recompiled when a new compiler is
+  uploaded to the autobuilders.  Currently, the only solution is to
+  re-upload library packages to the autobuilders at the same time you
+  upload a new Haskell Implementation.  Similarly for Redhat, binary packages have to
+  include the version number for <SPAN
+CLASS="APPLICATION"
+>GHC</SPAN
+> that they were compiled
+  with. </P
+><P
+> In a source distribution like FreeBSD (<A
+HREF="x481.html"
+>Section A.4</A
+>), this isn't a problem, since the
+  end user compiles all of their software themselves.  However, when the
+  end user compiles and installs a new Haskell Implementation, all of the libraries
+  compiled with the old Haskell Implementation will no longer work and need to be
+  recompiled.  As I understand it, there is currently no means of
+  performing this operation automatically.</P
+><P
+>Emacs / XEmacs presents packagers with some of the same
+  issues; they are both, practically speaking, Lisp compilers, and
+  incompatible, much like different versions of Haskell Implementations.  When an
+  elisp package is installed on Debian, it gets compiled automatically
+  (on the end user's machine) for each version of Emacs / XEmacs that
+  is installed.  This procedure is orthogonal to the XEmacs Packaging
+  System (<A
+HREF="x486.html"
+>Section A.5</A
+>) and is a duplication
+  of effort in some cases, but that is really the only way to make it
+  work with Debian.  This has some ugly properties from Debian's
+  standpoint: once compiled, there are files in the operating system
+  that the packaging system doesn't know about.  These are similar to
+  issues that Haskell packagers for Debian will have to face.</P
+></DIV
+><DIV
+CLASS="SECTION"
+><H2
+CLASS="SECTION"
+><A
+NAME="LIP-PROBLEMS-SOLVE"
+>2.2. Why We Should Solve This</A
+></H2
+><P
+></P
+><UL
+><LI
+><P
+>We need to evolve a decentralized way of
+  distributing libraries.  The current model of distributing them with
+  the Haskell Implementations puts too much strain upon the Haskell Implementation authors, and is not
+  sustainable in the long-term.  If this continues, availability and
+  reliability of libraries will suffer, and Haskell itself will suffer
+  in the long-term as a rich set of libraries is becoming the standard
+  for successful programming languages.</P
+></LI
+><LI
+><P
+>If we can help operating system packagers build
+  packages (Debian, RPM, etc.), then we'll have more happy end
+  users.</P
+></LI
+><LI
+><P
+>If we lower the cost of evaluating Haskell and
+  Haskell tools, more people might try them out.</P
+></LI
+><LI
+><P
+>Many Haskell programs are developed as research
+  prototypes and abandoned.  The subsequent bitrot makes it difficult
+  for the community to take over the projects.  Formally specifying
+  versioned dependencies and creating a central repository for Haskell
+  tools can help solve this problem.</P
+></LI
+><LI
+><P
+>Active participation with the rest of the Free
+  Software community (inclusion of Haskell in OS distributions,
+  interoperability between Haskell tools and external libraries) can
+  bring attention to Haskell and perhaps bring more talented
+  developers into The Flock.</P
+></LI
+></UL
+></DIV
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>Home</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="x75.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>Library Infrastructure Project</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+>&nbsp;</TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>A Solution for Haskell in Haskell</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

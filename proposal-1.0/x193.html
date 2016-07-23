@@ -1,0 +1,752 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML
+><HEAD
+><TITLE
+>Distribution Module</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.7"><LINK
+REL="HOME"
+TITLE="Library Infrastructure Project"
+HREF="index.html"><LINK
+REL="PREVIOUS"
+TITLE="A Solution for Haskell in Haskell"
+HREF="x78.html"><LINK
+REL="NEXT"
+TITLE="Use Cases"
+HREF="x321.html"></HEAD
+><BODY
+CLASS="SECTION"
+BGCOLOR="#FFFFFF"
+TEXT="#000000"
+LINK="#0000FF"
+VLINK="#840084"
+ALINK="#0000FF"
+><DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="3"
+ALIGN="center"
+>Library Infrastructure Project</TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="bottom"
+><A
+HREF="x78.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="80%"
+ALIGN="center"
+VALIGN="bottom"
+></TD
+><TD
+WIDTH="10%"
+ALIGN="right"
+VALIGN="bottom"
+><A
+HREF="x321.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="SECTION"
+><H1
+CLASS="SECTION"
+><A
+NAME="LIP-DISTRIBUTION"
+>4. Distribution Module</A
+></H1
+><DIV
+CLASS="SECTION"
+><H2
+CLASS="SECTION"
+><A
+NAME="LIP-BUILD"
+>4.1. <CODE
+CLASS="CLASSNAME"
+>Distribution.Build</CODE
+></A
+></H2
+><P
+>The basic strategy we will take for the actual task of building
+Haskell tools is as follows:</P
+><P
+></P
+><UL
+><LI
+><P
+>For simple tools like Haskell modules, leverage
+  <SPAN
+CLASS="APPLICATION"
+>hmake</SPAN
+>'s (<A
+HREF="x507.html"
+>Section A.7</A
+>) abilities and create a Haskell-based
+  system (which will evolve to do more complex
+  tasks.)</P
+></LI
+><LI
+><P
+>Tools that require something more complex can use
+  ``fptools'' or Yale's Make-based system (<A
+HREF="x498.html"
+>Section A.6</A
+>), or use their own build
+  system.</P
+></LI
+><LI
+><P
+>All systems will be wrapped in a common veneer
+  (<A
+HREF="x78.html#LIP-COMMAND"
+>Section 3.3</A
+>) so they look the same to the average
+  user and to layered tools (<A
+HREF="x396.html"
+>Section 6</A
+>)
+  and so that once <CODE
+CLASS="CLASSNAME"
+>Distribution.Build</CODE
+> evolves to be a more robust tool,
+  packages can transition to using it without effecting the interface
+  to their build system.  </P
+></LI
+></UL
+><P
+>Since it is obviously the compilers that do the actual compilation,
+the task of <CODE
+CLASS="CLASSNAME"
+>Distribution.Build</CODE
+> is more one of coordination among tools
+outside the compiler.  We hope to offer support for preprocessors
+(both existing and those yet to come).  <CODE
+CLASS="CLASSNAME"
+>Distribution.Build</CODE
+> will handle the
+task of compiling for a particular Haskell Implementation, or for all installed
+Haskell Implementations, and help to abstract-away differences between command-line
+flags.</P
+><P
+><CODE
+CLASS="CLASSNAME"
+>Distribution.Build</CODE
+> could also be used to recompile all of the installed
+libraries once a new Haskell Implementation is installed.  This is an important
+function, as it solves the problem of binary incompatibility between
+Haskell Implementations and versions thereof.  Another very useful function that
+<CODE
+CLASS="CLASSNAME"
+>Distribution.Build</CODE
+> could offer is the implementation of a generic
+<TT
+CLASS="FILENAME"
+>/usr/bin/haskell</TT
+> that either executes a Haskell
+program using the default compiler or throws the user into the default
+interpreter, depending upon how it is invoked.  This allows Haskell
+scripts (such as Setup.lhs) to be distributed with a
+<B
+CLASS="COMMAND"
+>#!/usr/bin/env haskell</B
+> annotation that has reasonable
+behavior.</P
+></DIV
+><DIV
+CLASS="SECTION"
+><H2
+CLASS="SECTION"
+><A
+NAME="LIP-INSTALL"
+>4.2. <CODE
+CLASS="CLASSNAME"
+>Distribution.Install</CODE
+></A
+></H2
+><P
+>The <CODE
+CLASS="CLASSNAME"
+>Distribution.Install</CODE
+> module performs the task of moving files
+  into place.  Presumably, this is the last task before package
+  registration.  <CODE
+CLASS="CLASSNAME"
+>Distribution.Install</CODE
+> will have to understand configuration
+  options for the operating systems that Haskell modules are being
+  installed on. (For instance, different operating systems have different
+  policies for where to put documentation, source code, binary files,
+  and libraries.)  Such information will most likely be read from a
+  file that can be edited by the system administrator (<A
+HREF="x193.html#LIP-HASKELL-CONFIG"
+>Section 4.4</A
+>).  </P
+><P
+>Not only will this module have to support standards on
+  different operating systems, but it must have access to filesystem
+  functionality like <B
+CLASS="COMMAND"
+>copy</B
+> and
+  <B
+CLASS="COMMAND"
+>move</B
+>, as well as permission-related operations.
+  Such functions should be offered by a library such as
+  <CODE
+CLASS="CLASSNAME"
+>System.Posix.Files</CODE
+> and
+  <CODE
+CLASS="CLASSNAME"
+>System.Directory</CODE
+>, but the
+  <CODE
+CLASS="CLASSNAME"
+>System.Posix</CODE
+> module is not available on all
+  operating systems.  To some extent, <CODE
+CLASS="CLASSNAME"
+>Distribution.Install</CODE
+> should handle the
+  differences between operating systems (file permissions for
+  instance), but Haskell should offer a more robust set of file
+  operations in order to encourage the use of Haskell for common
+  scripting tasks. (One issue that the author has noticed is that
+  <CODE
+CLASS="FUNCTION"
+>System.Directory.renameDirectory</CODE
+> is not
+  implemented the same in GHC and Hugs, which forces <CODE
+CLASS="CLASSNAME"
+>Distribution.Install</CODE
+> to
+  find a way to abstract the differences.)</P
+></DIV
+><DIV
+CLASS="SECTION"
+><H2
+CLASS="SECTION"
+><A
+NAME="LIP-PACKAGING"
+>4.3. <CODE
+CLASS="CLASSNAME"
+>Distribution.Package</CODE
+></A
+></H2
+><P
+>The complex task of packaging requires a lot of attention.
+  The proposed solution is not only a module to access the packaging
+  information, but also an application to assist external systems with
+  the same task:</P
+><P
+>The main features of this system are:</P
+><P
+></P
+><OL
+TYPE="1"
+><LI
+><P
+>To let the Haskell Implementations know how to use a package,
+   whether its available by default (or whether it requires a -package
+   flag), and where the root of its hierarchy is.</P
+></LI
+><LI
+><P
+>To store other information about a package,
+   including information such as its license, home page, version
+   number, and dependencies, to be used by other tools in the
+   <CODE
+CLASS="CLASSNAME"
+>Distribution</CODE
+> hierarchy.</P
+></LI
+><LI
+><P
+>All information will be made available through the
+   <CODE
+CLASS="CLASSNAME"
+>Distribution.Package</CODE
+> module.  The information can be made available to
+   non-haskell tools by way of a command-line tool, <SPAN
+CLASS="APPLICATION"
+>haskell-config</SPAN
+>
+   (<A
+HREF="x193.html#LIP-HASKELL-CONFIG"
+>Section 4.4</A
+>) with easily parsable output
+   (similar to <A
+HREF="http://www.freedesktop.org/software/pkgconfig/"
+TARGET="_top"
+>package-config</A
+>)
+   though a different solution may be necessary for
+   windows.</P
+></LI
+></OL
+><P
+>Some secondary features are:</P
+><P
+></P
+><OL
+TYPE="1"
+><LI
+><P
+>Let other tools, such as debuggers and
+   editors know where the source code for a module / package
+   is.</P
+></LI
+><LI
+><P
+>When new Haskell implementations are installed,
+   allow them to find the source code and import it into their own
+   library tree (perhaps through other features of the
+   L.I.P.)</P
+></LI
+><LI
+><P
+>For Haskell implementations that don't conform to
+   the new packaging interface, implement a wrapper so that it can
+   still utilize other important features of the Library
+   Infrastructure Project.</P
+></LI
+></OL
+><P
+>The information would be held in a file, such as
+<TT
+CLASS="FILENAME"
+>/etc/haskell/packages.conf</TT
+><A
+NAME="AEN263"
+HREF="#FTN.AEN263"
+><SPAN
+CLASS="footnote"
+>[1]</SPAN
+></A
+> and
+<TT
+CLASS="FILENAME"
+>~/.haskell/packages.conf</TT
+>.</P
+><DIV
+CLASS="SECTION"
+><H3
+CLASS="SECTION"
+><A
+NAME="LIP-PACKAGECONFIG"
+>4.3.1. PackageConfig Data Structure</A
+></H3
+><P
+>The package data structure might look something like this (based
+on GHC's Package class)</P
+><PRE
+CLASS="PROGRAMLISTING"
+>data PkgIdentifier
+    = PkgIdentifier {pkgName::String, pkgVersion::Version}
+{- ^Often need name and version since multiple versions of a single
+    package can exist on a system. -}
+
+data PackageConfig
+   = Package {
+        pkgIdent        :: PkgIdentifier,
+        license         :: License,
+        auto            :: Bool,
+        provides        :: [String],
+{- ^A bit pi-in-the-sky; might indicate that this package provides
+    functionality that other packages also provide, such as a compiler
+    or GUI framework, and upon which other packages might depend. -}
+
+        isDefault       :: Bool,
+-- ^might indicate if this is the default compiler or GUI framework.
+
+        import_dirs     :: [String],
+        source_dirs     :: [String],
+        library_dirs    :: [String],
+        hs_libraries    :: [String],
+        extra_libraries :: [String],
+        include_dirs    :: [String],
+        c_includes      :: [String],
+        build_deps      :: [Dependency], -- build dependencies
+        depends         :: [Dependency], -- use dependencies
+        extra_ghc_opts  :: [String],
+        extra_cc_opts   :: [String],
+        extra_ld_opts   :: [String],
+        framework_dirs  :: [String],
+        extra_frameworks:: [String]}
+
+data Version = DateVersion {versionYear  :: Integer,
+                            versionMonth :: Month,
+                            versionDay   :: Integer}
+             | NumberedVersion {versionMajor      :: Integer,
+                                versionMinor      :: Integer,
+                                versionPatchLevel :: Integer}
+
+data License = GPL | LGPL | BSD | {- ... | -} OtherLicense FilePath
+
+data Dependency = Dependency String VersionRange
+
+data VersionRange
+  = AnyVersion
+  | OrLaterVersion     Version
+  | ExactlyThisVersion Version
+  | OrEarlierVersion   Version
+
+type PackageMap = FiniteMap PkgIdentifier PackageConfig</PRE
+><P
+>But perhaps we'll need to be even more flexible: some implementations
+might not be interested in certain fields, and others might want their
+own fields.  It would certainly be desirable to have a flexible parser
+so that we can add more fields later and maintain backward
+compatibility.</P
+><P
+>The <CODE
+CLASS="CLASSNAME"
+>Distribution.Package</CODE
+> API might look like so:</P
+><PRE
+CLASS="PROGRAMLISTING"
+>userPkgConfigLocation   :: FilePath
+systemPkgConfigLocation :: FilePath
+getSystemPkgConfig  :: IO [PackageMap] -- ^Query /etc/haskell/packages.conf
+getUserPkgConfig    :: IO [PackageMap] -- ^Query ~/.haskell/packages.conf
+getPkgConfig        :: FilePath -&#62; IO [PackageMap]
+addUserPackage   :: PackageConfig -&#62; IO ()
+addSystemPackage :: PackageConfig -&#62; IO ()
+delUserPackage   :: PkgIdentifier -&#62; IO ()
+delSystemPackage :: PkgIdentifier -&#62; IO ()
+basicPackage     :: PackageConfig          -- provides sensible defaults
+checkLicense     :: PackageConfig -&#62; Bool
+{- Just for fun, check to see if the licences that this package uses
+   conflicts with any of the licences of the packages it depends on -}</PRE
+></DIV
+></DIV
+><DIV
+CLASS="SECTION"
+><H2
+CLASS="SECTION"
+><A
+NAME="LIP-HASKELL-CONFIG"
+>4.4. <SPAN
+CLASS="APPLICATION"
+>haskell-config</SPAN
+> Command-line
+  interface</A
+></H2
+><P
+>The <SPAN
+CLASS="APPLICATION"
+>haskell-config</SPAN
+> <A
+NAME="AEN280"
+HREF="#FTN.AEN280"
+><SPAN
+CLASS="footnote"
+>[2]</SPAN
+></A
+> tool is a
+command-line interface to the packaging system.  It will presumably be
+written in Haskell and import the <CODE
+CLASS="CLASSNAME"
+>Distribution.Package</CODE
+> module.  The purpose
+of this tool is to give non-Haskell systems the ability to interact
+with the packaging system, since they won't be able to import
+<CODE
+CLASS="CLASSNAME"
+>Distribution.Package</CODE
+>.  This tool serves a purpose similar to ghc-pkg and
+package-config.</P
+><PRE
+CLASS="PROGRAMLISTING"
+>% haskell-config [--user] register &#60; packageFile
+% haskell-config [--user] unregister packageName
+# add or remove packages from the package database.  --user indicates
+# that we should add it to the package database in the user's home
+# directory, not to the system-wide package database.
+
+% haskell-config packageName c_includes
+# would output this list in a way that a C compiler could use directly
+
+% haskell-config list-packages
+% haskell-config list-user-packages
+% haskell-config list-system-packages
+# Query the database in a variety of ways</PRE
+></DIV
+><DIV
+CLASS="SECTION"
+><H2
+CLASS="SECTION"
+><A
+NAME="LIP-HASKELL-PACKAGE"
+>4.5. haskell-pkg?</A
+></H2
+><P
+>The <SPAN
+CLASS="APPLICATION"
+>haskell-config</SPAN
+> tool brings up an interesting question.
+  Should the functionality of <CODE
+CLASS="CLASSNAME"
+>Distribution.Install</CODE
+> also be made available as
+  a command-line tool, perhaps called <B
+CLASS="COMMAND"
+>haskell-pkg</B
+>
+  ("Haskell package")?  In this sense, "package" would refer to that
+  word in the sense that <SPAN
+CLASS="APPLICATION"
+>dpkg</SPAN
+> and the 'P'
+  in <SPAN
+CLASS="APPLICATION"
+>RPM</SPAN
+> mean it:
+  <B
+CLASS="COMMAND"
+>haskell-pkg</B
+> could be used for installing and
+  removing Haskell programs when supplied with the package metadata
+  that is defined by <CODE
+CLASS="CLASSNAME"
+>Distribution.Package</CODE
+>.</P
+></DIV
+><DIV
+CLASS="SECTION"
+><H2
+CLASS="SECTION"
+><A
+NAME="LIP-CONFIGURE"
+>4.6. <CODE
+CLASS="CLASSNAME"
+>Distribution.Config</CODE
+></A
+></H2
+><P
+>The information available through the <CODE
+CLASS="CLASSNAME"
+>Distribution.Package</CODE
+> module is
+  not all of the information that could possibly be needed to prepare
+  a package for installation.  Typically, tools such as <SPAN
+CLASS="APPLICATION"
+>autoconf</SPAN
+> are
+  used to discover useful information about the system.  The author
+  has not given a lot of thought to the configuration problem, but he
+  sees a few possible paths:</P
+><P
+></P
+><UL
+><LI
+><P
+>A module, <CODE
+CLASS="CLASSNAME"
+>Distribution.Config</CODE
+> can act as an interface to
+  configuration information.  This is the approach that Python has
+  taken.</P
+></LI
+><LI
+><P
+>Some information can be written by the end user or
+  maintained on the system in a standard file format.  The file could
+  reside, for example in 
+ <TT
+CLASS="FILENAME"
+>~/.haskell/distributionConfig</TT
+>,
+  <TT
+CLASS="FILENAME"
+>/etc/haskell/distributionConfig</TT
+>, and
+  <TT
+CLASS="FILENAME"
+>distributionConfig</TT
+> within the package
+  directory.  This information can be made available through the
+  <CODE
+CLASS="CLASSNAME"
+>Distribution.Config</CODE
+> module.</P
+></LI
+><LI
+><P
+>Certain pieces of information are available when the
+  Haskell Implementations themselves are installed.  This information can be made
+  available to installing scripts once again through the
+  <TT
+CLASS="FILENAME"
+>distributionConfig</TT
+> file.</P
+></LI
+><LI
+><P
+>Shortcomings in the <CODE
+CLASS="CLASSNAME"
+>Distribution.Config</CODE
+> module can be
+  made up by using <SPAN
+CLASS="APPLICATION"
+>autoconf</SPAN
+> itself, which can output information to
+  the above mentioned <TT
+CLASS="FILENAME"
+>distributionConfig</TT
+>
+  file.</P
+></LI
+></UL
+></DIV
+></DIV
+><H3
+CLASS="FOOTNOTES"
+>Notes</H3
+><TABLE
+BORDER="0"
+CLASS="FOOTNOTES"
+WIDTH="100%"
+><TR
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+WIDTH="5%"
+><A
+NAME="FTN.AEN263"
+HREF="x193.html#AEN263"
+><SPAN
+CLASS="footnote"
+>[1]</SPAN
+></A
+></TD
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+WIDTH="95%"
+><P
+>Is
+there any Unix system where <TT
+CLASS="FILENAME"
+>etc</TT
+> is the wrong
+place for something like this?</P
+></TD
+></TR
+><TR
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+WIDTH="5%"
+><A
+NAME="FTN.AEN280"
+HREF="x193.html#AEN280"
+><SPAN
+CLASS="footnote"
+>[2]</SPAN
+></A
+></TD
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+WIDTH="95%"
+><P
+>Because of the confusion
+between different kinds of configuration (the kinds offered by
+<CODE
+CLASS="CLASSNAME"
+>Distribution.Package</CODE
+> and <CODE
+CLASS="CLASSNAME"
+>Distribution.Config</CODE
+>) I am torn about the name of this
+program.  There is the further confusion between package management
+(the actual installation and removal of the programs themselves) and
+interfacing with the packaging system.  Further there is one more bit
+of confusion between packages in the Haskell system (i.e. a set of
+modules distributed together by an author) and a package on the
+operating system.  If anyone has an idea to straighten all of this
+out, I'd be glad to hear it :) </P
+></TD
+></TR
+></TABLE
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="x78.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>Home</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="x321.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>A Solution for Haskell in Haskell</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+>&nbsp;</TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>Use Cases</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

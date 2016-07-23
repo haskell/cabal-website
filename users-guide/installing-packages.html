@@ -1,0 +1,665 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta name="generator" content="pandoc" />
+  <title>Cabal User Guide</title>
+  <style type="text/css">code{white-space: pre;}</style>
+  <link rel="stylesheet" href="Cabal.css" type="text/css" />
+</head>
+<body>
+<div id="header">
+<h1 class="title">Cabal User Guide</h1>
+</div>
+<div id="TOC">
+<ul>
+<li><a href="#building-and-installing-packages">Building and installing packages</a><ul>
+<li><a href="#building-and-installing-a-system-package">Building and installing a system package</a></li>
+<li><a href="#building-and-installing-a-user-package">Building and installing a user package</a></li>
+<li><a href="#installing-packages-from-hackage">Installing packages from Hackage</a></li>
+<li><a href="#developing-with-sandboxes">Developing with sandboxes</a><ul>
+<li><a href="#sandboxes-basic-usage">Sandboxes: basic usage</a></li>
+<li><a href="#sandboxes-advanced-usage">Sandboxes: advanced usage</a></li>
+</ul></li>
+<li><a href="#creating-a-binary-package">Creating a binary package</a></li>
+<li><a href="#setup-configure">setup configure</a><ul>
+<li><a href="#programs-used-for-building">Programs used for building</a></li>
+<li><a href="#installation-paths">Installation paths</a></li>
+<li><a href="#controlling-flag-assignments">Controlling Flag Assignments</a></li>
+<li><a href="#building-test-suites">Building Test Suites</a></li>
+<li><a href="#miscellaneous-options">Miscellaneous options</a></li>
+</ul></li>
+<li><a href="#setup-build">setup build</a></li>
+<li><a href="#setup-haddock">setup haddock</a></li>
+<li><a href="#setup-hscolour">setup hscolour</a></li>
+<li><a href="#setup-install">setup install</a></li>
+<li><a href="#setup-copy">setup copy</a></li>
+<li><a href="#setup-register">setup register</a></li>
+<li><a href="#setup-unregister">setup unregister</a></li>
+<li><a href="#setup-clean">setup clean</a></li>
+<li><a href="#setup-test">setup test</a></li>
+<li><a href="#setup-sdist">setup sdist</a></li>
+</ul></li>
+</ul>
+</div>
+<h1 id="building-and-installing-packages">Building and installing packages</h1>
+<p>After you’ve unpacked a Cabal package, you can build it by moving into the root directory of the package and running the <code>cabal</code> tool there:</p>
+<blockquote>
+<p><code>cabal [command] [option...]</code></p>
+</blockquote>
+<p>The <em>command</em> argument selects a particular step in the build/install process.</p>
+<p>You can also get a summary of the command syntax with</p>
+<blockquote>
+<p><code>cabal help</code></p>
+</blockquote>
+<p>Alternatively, you can also use the <code>Setup.hs</code> or <code>Setup.lhs</code> script:</p>
+<blockquote>
+<p><code>runhaskell Setup.hs [command] [option...]</code></p>
+</blockquote>
+<p>For the summary of the command syntax, run:</p>
+<blockquote>
+<p><code>cabal help</code></p>
+</blockquote>
+<p>or</p>
+<blockquote>
+<p><code>runhaskell Setup.hs --help</code></p>
+</blockquote>
+<h2 id="building-and-installing-a-system-package">Building and installing a system package</h2>
+<pre><code>runhaskell Setup.hs configure --ghc
+runhaskell Setup.hs build
+runhaskell Setup.hs install</code></pre>
+<p>The first line readies the system to build the tool using GHC; for example, it checks that GHC exists on the system. The second line performs the actual building, while the last both copies the build results to some permanent place and registers the package with GHC.</p>
+<h2 id="building-and-installing-a-user-package">Building and installing a user package</h2>
+<pre><code>runhaskell Setup.hs configure --user
+runhaskell Setup.hs build
+runhaskell Setup.hs install</code></pre>
+<p>The package is installed under the user’s home directory and is registered in the user’s package database (<code>--user</code>).</p>
+<h2 id="installing-packages-from-hackage">Installing packages from Hackage</h2>
+<p>The <code>cabal</code> tool also can download, configure, build and install a <a href="http://hackage.haskell.org/">Hackage</a> package and all of its dependencies in a single step. To do this, run:</p>
+<pre><code>cabal install [PACKAGE...]</code></pre>
+<p>To browse the list of available packages, visit the <a href="http://hackage.haskell.org/">Hackage</a> web site.</p>
+<h2 id="developing-with-sandboxes">Developing with sandboxes</h2>
+<p>By default, any dependencies of the package are installed into the global or user package databases (e.g. using <code>cabal install --only-dependencies</code>). If you’re building several different packages that have incompatible dependencies, this can cause the build to fail. One way to avoid this problem is to build each package in an isolated environment (“sandbox”), with a sandbox-local package database. Because sandboxes are per-project, inconsistent dependencies can be simply disallowed.</p>
+<p>For more on sandboxes, see also <a href="http://coldwa.st/e/blog/2013-08-20-Cabal-sandbox.html">this article</a>.</p>
+<h3 id="sandboxes-basic-usage">Sandboxes: basic usage</h3>
+<p>To initialise a fresh sandbox in the current directory, run <code>cabal sandbox init</code>. All subsequent commands (such as <code>build</code> and <code>install</code>) from this point will use the sandbox.</p>
+<pre><code>$ cd /path/to/my/haskell/library
+$ cabal sandbox init                   # Initialise the sandbox
+$ cabal install --only-dependencies    # Install dependencies into the sandbox
+$ cabal build                          # Build your package inside the sandbox</code></pre>
+<p>It can be useful to make a source package available for installation in the sandbox - for example, if your package depends on a patched or an unreleased version of a library. This can be done with the <code>cabal sandbox add-source</code> command - think of it as “local <a href="http://hackage.haskell.org/">Hackage</a>”. If an add-source dependency is later modified, it is reinstalled automatically.</p>
+<pre><code>$ cabal sandbox add-source /my/patched/library # Add a new add-source dependency
+$ cabal install --dependencies-only            # Install it into the sandbox
+$ cabal build                                  # Build the local package
+$ $EDITOR /my/patched/library/Source.hs        # Modify the add-source dependency
+$ cabal build                                  # Modified dependency is automatically reinstalled</code></pre>
+<p>Normally, the sandbox settings (such as optimisation level) are inherited from the main Cabal config file (<code>$HOME/cabal/config</code>). Sometimes, though, you need to change some settings specifically for a single sandbox. You can do this by creating a <code>cabal.config</code> file in the same directory with your <code>cabal.sandbox.config</code> (which was created by <code>sandbox init</code>). This file has the same syntax as the main Cabal config file.</p>
+<pre><code>$ cat cabal.config
+documentation: True
+constraints: foo == 1.0, bar &gt;= 2.0, baz
+$ cabal build                                  # Uses settings from the cabal.config file</code></pre>
+<p>When you have decided that you no longer want to build your package inside a sandbox, just delete it:</p>
+<pre><code>$ cabal sandbox delete                       # Built-in command
+$ rm -rf .cabal-sandbox cabal.sandbox.config # Alternative manual method</code></pre>
+<h3 id="sandboxes-advanced-usage">Sandboxes: advanced usage</h3>
+<p>The default behaviour of the <code>add-source</code> command is to track modifications done to the added dependency and reinstall the sandbox copy of the package when needed. Sometimes this is not desirable: in these cases you can use <code>add-source --snapshot</code>, which disables the change tracking. In addition to <code>add-source</code>, there are also <code>list-sources</code> and <code>delete-source</code> commands.</p>
+<p>Sometimes one wants to share a single sandbox between multiple packages. This can be easily done with the <code>--sandbox</code> option:</p>
+<pre><code>$ mkdir -p /path/to/shared-sandbox
+$ cd /path/to/shared-sandbox
+$ cabal sandbox init --sandbox .
+$ cd /path/to/package-a
+$ cabal sandbox init --sandbox /path/to/shared-sandbox
+$ cd /path/to/package-b
+$ cabal sandbox init --sandbox /path/to/shared-sandbox</code></pre>
+<p>Note that <code>cabal sandbox init --sandbox .</code> puts all sandbox files into the current directory. By default, <code>cabal sandbox init</code> initialises a new sandbox in a newly-created subdirectory of the current working directory (<code>./.cabal-sandbox</code>).</p>
+<p>Using multiple different compiler versions simultaneously is also supported, via the <code>-w</code> option:</p>
+<pre><code>$ cabal sandbox init
+$ cabal install --only-dependencies -w /path/to/ghc-1 # Install dependencies for both compilers
+$ cabal install --only-dependencies -w /path/to/ghc-2
+$ cabal configure -w /path/to/ghc-1                   # Build with the first compiler
+$ cabal build
+$ cabal configure -w /path/to/ghc-2                   # Build with the second compiler
+$ cabal build</code></pre>
+<p>It can be occasionally useful to run the compiler-specific package manager tool (e.g. <code>ghc-pkg</code>) tool on the sandbox package DB directly (for example, you may need to unregister some packages). The <code>cabal sandbox hc-pkg</code> command is a convenient wrapper that runs the compiler-specific package manager tool with the arguments:</p>
+<pre><code>$ cabal -v sandbox hc-pkg list
+Using a sandbox located at /path/to/.cabal-sandbox
+&#39;ghc-pkg&#39; &#39;--global&#39; &#39;--no-user-package-conf&#39;
+    &#39;--package-conf=/path/to/.cabal-sandbox/i386-linux-ghc-7.4.2-packages.conf.d&#39;
+    &#39;list&#39;
+[...]</code></pre>
+<p>The <code>--require-sandbox</code> option makes all sandbox-aware commands (<code>install</code>/<code>build</code>/etc.) exit with error if there is no sandbox present. This makes it harder to accidentally modify the user package database. The option can be also turned on via the per-user configuration file (<code>~/.cabal/config</code>) or the per-project one (<code>$PROJECT_DIR/cabal.config</code>). The error can be squelched with <code>--no-require-sandbox</code>.</p>
+<p>The option <code>--sandbox-config-file</code> allows to specify the location of the <code>cabal.sandbox.config</code> file (by default, <code>cabal</code> searches for it in the current directory). This provides the same functionality as shared sandboxes, but sometimes can be more convenient. Example:</p>
+<pre><code>$ mkdir my/sandbox
+$ cd my/sandbox
+$ cabal sandbox init
+$ cd /path/to/my/project
+$ cabal --sandbox-config-file=/path/to/my/sandbox/cabal.sandbox.config install
+# Uses the sandbox located at /path/to/my/sandbox/.cabal-sandbox
+$ cd ~
+$ cabal --sandbox-config-file=/path/to/my/sandbox/cabal.sandbox.config install
+# Still uses the same sandbox</code></pre>
+<p>The sandbox config file can be also specified via the <code>CABAL_SANDBOX_CONFIG</code> environment variable.</p>
+<p>Finally, the flag <code>--ignore-sandbox</code> lets you temporarily ignore an existing sandbox:</p>
+<pre><code>$ mkdir my/sandbox
+$ cd my/sandbox
+$ cabal sandbox init
+$ cabal --ignore-sandbox install text
+# Installs &#39;text&#39; in the user package database (&#39;~/.cabal&#39;).</code></pre>
+<h2 id="creating-a-binary-package">Creating a binary package</h2>
+<p>When creating binary packages (e.g. for Red Hat or Debian) one needs to create a tarball that can be sent to another system for unpacking in the root directory:</p>
+<pre><code>runhaskell Setup.hs configure --prefix=/usr
+runhaskell Setup.hs build
+runhaskell Setup.hs copy --destdir=/tmp/mypkg
+tar -czf mypkg.tar.gz /tmp/mypkg/</code></pre>
+<p>If the package contains a library, you need two additional steps:</p>
+<pre><code>runhaskell Setup.hs register --gen-script
+runhaskell Setup.hs unregister --gen-script</code></pre>
+<p>This creates shell scripts <code>register.sh</code> and <code>unregister.sh</code>, which must also be sent to the target system. After unpacking there, the package must be registered by running the <code>register.sh</code> script. The <code>unregister.sh</code> script would be used in the uninstall procedure of the package. Similar steps may be used for creating binary packages for Windows.</p>
+<p>The following options are understood by all commands:</p>
+<dl>
+<dt><code>--help</code>, <code>-h</code> or <code>-?</code></dt>
+<dd><p>List the available options for the command.</p>
+</dd>
+<dt><code>--verbose=</code><em>n</em> or <code>-v</code><em>n</em></dt>
+<dd><p>Set the verbosity level (0-3). The normal level is 1; a missing <em>n</em> defaults to 2.</p>
+</dd>
+</dl>
+<p>The various commands and the additional options they support are described below. In the simple build infrastructure, any other options will be reported as errors.</p>
+<h2 id="setup-configure">setup configure</h2>
+<p>Prepare to build the package. Typically, this step checks that the target platform is capable of building the package, and discovers platform-specific features that are needed during the build.</p>
+<p>The user may also adjust the behaviour of later stages using the options listed in the following subsections. In the simple build infrastructure, the values supplied via these options are recorded in a private file read by later stages.</p>
+<p>If a user-supplied <code>configure</code> script is run (see the section on <a href="developing-packages.html#system-dependent-parameters">system-dependent parameters</a> or on <a href="developing-packages.html#more-complex-packages">complex packages</a>), it is passed the <code>--with-hc-pkg</code>, <code>--prefix</code>, <code>--bindir</code>, <code>--libdir</code>, <code>--datadir</code>, <code>--libexecdir</code> and <code>--sysconfdir</code> options. In addition the value of the <code>--with-compiler</code> option is passed in a <code>--with-hc</code> option and all options specified with <code>--configure-option=</code> are passed on.</p>
+<h3 id="programs-used-for-building">Programs used for building</h3>
+<p>The following options govern the programs used to process the source files of a package:</p>
+<dl>
+<dt><code>--ghc</code> or <code>-g</code>, <code>--jhc</code>, <code>--lhc</code>, <code>--uhc</code></dt>
+<dd><p>Specify which Haskell implementation to use to build the package. At most one of these flags may be given. If none is given, the implementation under which the setup script was compiled or interpreted is used.</p>
+</dd>
+<dt><code>--with-compiler=</code><em>path</em> or <code>-w</code><em>path</em></dt>
+<dd><p>Specify the path to a particular compiler. If given, this must match the implementation selected above. The default is to search for the usual name of the selected implementation.</p>
+<p>This flag also sets the default value of the <code>--with-hc-pkg</code> option to the package tool for this compiler. Check the output of <code>setup configure -v</code> to ensure that it finds the right package tool (or use <code>--with-hc-pkg</code> explicitly).</p>
+</dd>
+<dt><code>--with-hc-pkg=</code><em>path</em></dt>
+<dd><p>Specify the path to the package tool, e.g. <code>ghc-pkg</code>. The package tool must be compatible with the compiler specified by <code>--with-compiler</code>. If this option is omitted, the default value is determined from the compiler selected.</p>
+</dd>
+<dt><code>--with-</code><em><code>prog</code></em><code>=</code><em>path</em></dt>
+<dd><p>Specify the path to the program <em>prog</em>. Any program known to Cabal can be used in place of <em>prog</em>. It can either be a fully path or the name of a program that can be found on the program search path. For example: <code>--with-ghc=ghc-6.6.1</code> or <code>--with-cpphs=/usr/local/bin/cpphs</code>. The full list of accepted programs is not enumerated in this user guide. Rather, run <code>cabal install --help</code> to view the list.</p>
+</dd>
+<dt><code>--</code><em><code>prog</code></em><code>-options=</code><em>options</em></dt>
+<dd><p>Specify additional options to the program <em>prog</em>. Any program known to Cabal can be used in place of <em>prog</em>. For example: <code>--alex-options=&quot;--template=mytemplatedir/&quot;</code>. The <em>options</em> is split into program options based on spaces. Any options containing embedded spaced need to be quoted, for example <code>--foo-options='--bar=&quot;C:\Program File\Bar&quot;'</code>. As an alternative that takes only one option at a time but avoids the need to quote, use <code>--</code><em><code>prog</code></em><code>-option</code> instead.</p>
+</dd>
+<dt><code>--</code><em><code>prog</code></em><code>-option=</code><em>option</em></dt>
+<dd><p>Specify a single additional option to the program <em>prog</em>. For passing an option that contain embedded spaces, such as a file name with embedded spaces, using this rather than <code>--</code><em><code>prog</code></em><code>-options</code> means you do not need an additional level of quoting. Of course if you are using a command shell you may still need to quote, for example <code>--foo-options=&quot;--bar=C:\Program File\Bar&quot;</code>.</p>
+</dd>
+</dl>
+<p>All of the options passed with either <code>--</code><em><code>prog</code></em><code>-options</code> or <code>--</code><em><code>prog</code></em><code>-option</code> are passed in the order they were specified on the configure command line.</p>
+<h3 id="installation-paths">Installation paths</h3>
+<p>The following options govern the location of installed files from a package:</p>
+<dl>
+<dt><code>--prefix=</code><em>dir</em></dt>
+<dd><p>The root of the installation. For example for a global install you might use <code>/usr/local</code> on a Unix system, or <code>C:\Program Files</code> on a Windows system. The other installation paths are usually subdirectories of <em>prefix</em>, but they don’t have to be.</p>
+<p>In the simple build system, <em>dir</em> may contain the following path variables: <code>$pkgid</code>, <code>$pkg</code>, <code>$version</code>, <code>$compiler</code>, <code>$os</code>, <code>$arch</code>, <code>$abi</code>, <code>$abitag</code></p>
+</dd>
+<dt><code>--bindir=</code><em>dir</em></dt>
+<dd><p>Executables that the user might invoke are installed here.</p>
+<p>In the simple build system, <em>dir</em> may contain the following path variables: <code>$prefix</code>, <code>$pkgid</code>, <code>$pkg</code>, <code>$version</code>, <code>$compiler</code>, <code>$os</code>, <code>$arch</code>, <code>$abi</code>, `$abitag</p>
+</dd>
+<dt><code>--libdir=</code><em>dir</em></dt>
+<dd><p>Object-code libraries are installed here.</p>
+<p>In the simple build system, <em>dir</em> may contain the following path variables: <code>$prefix</code>, <code>$bindir</code>, <code>$pkgid</code>, <code>$pkg</code>, <code>$version</code>, <code>$compiler</code>, <code>$os</code>, <code>$arch</code>, <code>$abi</code>, <code>$abitag</code></p>
+</dd>
+<dt><code>--libexecdir=</code><em>dir</em></dt>
+<dd><p>Executables that are not expected to be invoked directly by the user are installed here.</p>
+<p>In the simple build system, <em>dir</em> may contain the following path variables: <code>$prefix</code>, <code>$bindir</code>, <code>$libdir</code>, <code>$libsubdir</code>, <code>$pkgid</code>, <code>$pkg</code>, <code>$version</code>, <code>$compiler</code>, <code>$os</code>, <code>$arch</code>, <code>$abi</code>, <code>$abitag</code></p>
+</dd>
+<dt><code>--datadir</code>=<em>dir</em></dt>
+<dd><p>Architecture-independent data files are installed here.</p>
+<p>In the simple build system, <em>dir</em> may contain the following path variables: <code>$prefix</code>, <code>$bindir</code>, <code>$libdir</code>, <code>$libsubdir</code>, <code>$pkgid</code>, <code>$pkg</code>, <code>$version</code>, <code>$compiler</code>, <code>$os</code>, <code>$arch</code>, <code>$abi</code>, <code>$abitag</code></p>
+</dd>
+<dt><code>--sysconfdir=</code><em>dir</em></dt>
+<dd><p>Installation directory for the configuration files.</p>
+<p>In the simple build system, <em>dir</em> may contain the following path variables: <code>$prefix</code>, <code>$bindir</code>, <code>$libdir</code>, <code>$libsubdir</code>, <code>$pkgid</code>, <code>$pkg</code>, <code>$version</code>, <code>$compiler</code>, <code>$os</code>, <code>$arch</code>, <code>$abi</code>, <code>$abitag</code></p>
+</dd>
+</dl>
+<p>In addition the simple build system supports the following installation path options:</p>
+<dl>
+<dt><code>--libsubdir=</code><em>dir</em></dt>
+<dd><p>A subdirectory of <em>libdir</em> in which libraries are actually installed. For example, in the simple build system on Unix, the default <em>libdir</em> is <code>/usr/local/lib</code>, and <em>libsubdir</em> contains the package identifier and compiler, e.g. <code>mypkg-0.2/ghc-6.4</code>, so libraries would be installed in <code>/usr/local/lib/mypkg-0.2/ghc-6.4</code>.</p>
+<p><em>dir</em> may contain the following path variables: <code>$pkgid</code>, <code>$pkg</code>, <code>$version</code>, <code>$compiler</code>, <code>$os</code>, <code>$arch</code>, <code>$abi</code>, <code>$abitag</code></p>
+</dd>
+<dt><code>--datasubdir=</code><em>dir</em></dt>
+<dd><p>A subdirectory of <em>datadir</em> in which data files are actually installed.</p>
+<p><em>dir</em> may contain the following path variables: <code>$pkgid</code>, <code>$pkg</code>, <code>$version</code>, <code>$compiler</code>, <code>$os</code>, <code>$arch</code>, <code>$abi</code>, <code>$abitag</code></p>
+</dd>
+<dt><code>--docdir=</code><em>dir</em></dt>
+<dd><p>Documentation files are installed relative to this directory.</p>
+<p><em>dir</em> may contain the following path variables: <code>$prefix</code>, <code>$bindir</code>, <code>$libdir</code>, <code>$libsubdir</code>, <code>$datadir</code>, <code>$datasubdir</code>, <code>$pkgid</code>, <code>$pkg</code>, <code>$version</code>, <code>$compiler</code>, <code>$os</code>, <code>$arch</code>, <code>$abi</code>, <code>$abitag</code></p>
+</dd>
+<dt><code>--htmldir=</code><em>dir</em></dt>
+<dd><p>HTML documentation files are installed relative to this directory.</p>
+<p><em>dir</em> may contain the following path variables: <code>$prefix</code>, <code>$bindir</code>, <code>$libdir</code>, <code>$libsubdir</code>, <code>$datadir</code>, <code>$datasubdir</code>, <code>$docdir</code>, <code>$pkgid</code>, <code>$pkg</code>, <code>$version</code>, <code>$compiler</code>, <code>$os</code>, <code>$arch</code>, <code>$abi</code>, <code>$abitag</code></p>
+</dd>
+<dt><code>--program-prefix=</code><em>prefix</em></dt>
+<dd><p>Prepend <em>prefix</em> to installed program names.</p>
+<p><em>prefix</em> may contain the following path variables: <code>$pkgid</code>, <code>$pkg</code>, <code>$version</code>, <code>$compiler</code>, <code>$os</code>, <code>$arch</code>, <code>$abi</code>, <code>$abitag</code></p>
+</dd>
+<dt><code>--program-suffix=</code><em>suffix</em></dt>
+<dd><p>Append <em>suffix</em> to installed program names. The most obvious use for this is to append the program’s version number to make it possible to install several versions of a program at once: <code>--program-suffix='$version'</code>.</p>
+<p><em>suffix</em> may contain the following path variables: <code>$pkgid</code>, <code>$pkg</code>, <code>$version</code>, <code>$compiler</code>, <code>$os</code>, <code>$arch</code>, <code>$abi</code>, <code>$abitag</code></p>
+</dd>
+</dl>
+<h4 id="path-variables-in-the-simple-build-system">Path variables in the simple build system</h4>
+<p>For the simple build system, there are a number of variables that can be used when specifying installation paths. The defaults are also specified in terms of these variables. A number of the variables are actually for other paths, like <code>$prefix</code>. This allows paths to be specified relative to each other rather than as absolute paths, which is important for building relocatable packages (see <a href="#prefix-independence">prefix independence</a>).</p>
+<dl>
+<dt><code>$prefix</code></dt>
+<dd><p>The path variable that stands for the root of the installation. For an installation to be relocatable, all other installation paths must be relative to the <code>$prefix</code> variable.</p>
+</dd>
+<dt><code>$bindir</code></dt>
+<dd><p>The path variable that expands to the path given by the <code>--bindir</code> configure option (or the default).</p>
+</dd>
+<dt><code>$libdir</code></dt>
+<dd><p>As above but for <code>--libdir</code></p>
+</dd>
+<dt><code>$libsubdir</code></dt>
+<dd><p>As above but for <code>--libsubdir</code></p>
+</dd>
+<dt><code>$datadir</code></dt>
+<dd><p>As above but for <code>--datadir</code></p>
+</dd>
+<dt><code>$datasubdir</code></dt>
+<dd><p>As above but for <code>--datasubdir</code></p>
+</dd>
+<dt><code>$docdir</code></dt>
+<dd><p>As above but for <code>--docdir</code></p>
+</dd>
+<dt><code>$pkgid</code></dt>
+<dd><p>The name and version of the package, e.g. <code>mypkg-0.2</code></p>
+</dd>
+<dt><code>$pkg</code></dt>
+<dd><p>The name of the package, e.g. <code>mypkg</code></p>
+</dd>
+<dt><code>$version</code></dt>
+<dd><p>The version of the package, e.g. <code>0.2</code></p>
+</dd>
+<dt><code>$compiler</code></dt>
+<dd><p>The compiler being used to build the package, e.g. <code>ghc-6.6.1</code></p>
+</dd>
+<dt><code>$os</code></dt>
+<dd><p>The operating system of the computer being used to build the package, e.g. <code>linux</code>, <code>windows</code>, <code>osx</code>, <code>freebsd</code> or <code>solaris</code></p>
+</dd>
+<dt><code>$arch</code></dt>
+<dd><p>The architecture of the computer being used to build the package, e.g. <code>i386</code>, <code>x86_64</code>, <code>ppc</code> or <code>sparc</code></p>
+</dd>
+<dt><code>$abitag</code></dt>
+<dd><p>An optional tag that a compiler can use for telling incompatible ABI’s on the same architecture apart. GHCJS encodes the underlying GHC version in the ABI tag.</p>
+</dd>
+<dt><code>$abi</code></dt>
+<dd><p>A shortcut for getting a path that completely identifies the platform in terms of binary compatibility. Expands to the same value as <code>$arch-$os-compiler-$abitag</code> if the compiler uses an abi tag, <code>$arch-$os-$compiler</code> if it doesn’t.</p>
+</dd>
+</dl>
+<h4 id="paths-in-the-simple-build-system">Paths in the simple build system</h4>
+<p>For the simple build system, the following defaults apply:</p>
+<table>
+<thead>
+<tr class="header">
+<th align="left">Option</th>
+<th align="left">Windows Default</th>
+<th align="left">Unix Default</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left"><code>--prefix</code> (global)</td>
+<td align="left"><code>C:\Program Files\Haskell</code></td>
+<td align="left"><code>/usr/local</code></td>
+</tr>
+<tr class="even">
+<td align="left"><code>--prefix</code> (per-user)</td>
+<td align="left"><code>C:\Documents And Settings\user\Application Data\cabal</code></td>
+<td align="left"><code>$HOME/.cabal</code></td>
+</tr>
+<tr class="odd">
+<td align="left"><code>--bindir</code></td>
+<td align="left"><code>$prefix\bin</code></td>
+<td align="left"><code>$prefix/bin</code></td>
+</tr>
+<tr class="even">
+<td align="left"><code>--libdir</code></td>
+<td align="left"><code>$prefix</code></td>
+<td align="left"><code>$prefix/lib</code></td>
+</tr>
+<tr class="odd">
+<td align="left"><code>--libsubdir</code> (others)</td>
+<td align="left"><code>$pkgid\$compiler</code></td>
+<td align="left"><code>$pkgid/$compiler</code></td>
+</tr>
+<tr class="even">
+<td align="left"><code>--libexecdir</code></td>
+<td align="left"><code>$prefix\$pkgid</code></td>
+<td align="left"><code>$prefix/libexec</code></td>
+</tr>
+<tr class="odd">
+<td align="left"><code>--datadir</code> (executable)</td>
+<td align="left"><code>$prefix</code></td>
+<td align="left"><code>$prefix/share</code></td>
+</tr>
+<tr class="even">
+<td align="left"><code>--datadir</code> (library)</td>
+<td align="left"><code>C:\Program Files\Haskell</code></td>
+<td align="left"><code>$prefix/share</code></td>
+</tr>
+<tr class="odd">
+<td align="left"><code>--datasubdir</code></td>
+<td align="left"><code>$pkgid</code></td>
+<td align="left"><code>$pkgid</code></td>
+</tr>
+<tr class="even">
+<td align="left"><code>--docdir</code></td>
+<td align="left"><code>$prefix\doc\$pkgid</code></td>
+<td align="left"><code>$datadir/doc/$pkgid</code></td>
+</tr>
+<tr class="odd">
+<td align="left"><code>--sysconfdir</code></td>
+<td align="left"><code>$prefix\etc</code></td>
+<td align="left"><code>$prefix/etc</code></td>
+</tr>
+<tr class="even">
+<td align="left"><code>--htmldir</code></td>
+<td align="left"><code>$docdir\html</code></td>
+<td align="left"><code>$docdir/html</code></td>
+</tr>
+<tr class="odd">
+<td align="left"><code>--program-prefix</code></td>
+<td align="left">(empty)</td>
+<td align="left">(empty)</td>
+</tr>
+<tr class="even">
+<td align="left"><code>--program-suffix</code></td>
+<td align="left">(empty)</td>
+<td align="left">(empty)</td>
+</tr>
+</tbody>
+</table>
+<h4 id="prefix-independence">Prefix-independence</h4>
+<p>On Windows it is possible to obtain the pathname of the running program. This means that we can construct an installable executable package that is independent of its absolute install location. The executable can find its auxiliary files by finding its own path and knowing the location of the other files relative to <code>$bindir</code>. Prefix-independence is particularly useful: it means the user can choose the install location (i.e. the value of <code>$prefix</code>) at install-time, rather than having to bake the path into the binary when it is built.</p>
+<p>In order to achieve this, we require that for an executable on Windows, all of <code>$bindir</code>, <code>$libdir</code>, <code>$datadir</code> and <code>$libexecdir</code> begin with <code>$prefix</code>. If this is not the case then the compiled executable will have baked-in all absolute paths.</p>
+<p>The application need do nothing special to achieve prefix-independence. If it finds any files using <code>getDataFileName</code> and the <a href="developing-packages.html#accessing-data-files-from-package-code">other functions provided for the purpose</a>, the files will be accessed relative to the location of the current executable.</p>
+<p>A library cannot (currently) be prefix-independent, because it will be linked into an executable whose file system location bears no relation to the library package.</p>
+<h3 id="controlling-flag-assignments">Controlling Flag Assignments</h3>
+<p>Flag assignments (see the <a href="developing-packages.html#resolution-of-conditions-and-flags">resolution of conditions and flags</a>) can be controlled with the following command line options.</p>
+<dl>
+<dt><code>-f</code> <em>flagname</em> or <code>-f</code> <code>-</code><em>flagname</em></dt>
+<dd><p>Force the specified flag to <code>true</code> or <code>false</code> (if preceded with a <code>-</code>). Later specifications for the same flags will override earlier, i.e., specifying <code>-fdebug -f-debug</code> is equivalent to <code>-f-debug</code></p>
+</dd>
+<dt><code>--flags=</code><em>flagspecs</em></dt>
+<dd><p>Same as <code>-f</code>, but allows specifying multiple flag assignments at once. The parameter is a space-separated list of flag names (to force a flag to <code>true</code>), optionally preceded by a <code>-</code> (to force a flag to <code>false</code>). For example, <code>--flags=&quot;debug -feature1 feature2&quot;</code> is equivalent to <code>-fdebug -f-feature1 -ffeature2</code>.</p>
+</dd>
+</dl>
+<h3 id="building-test-suites">Building Test Suites</h3>
+<dl>
+<dt><code>--enable-tests</code></dt>
+<dd><p>Build the test suites defined in the package description file during the <code>build</code> stage. Check for dependencies required by the test suites. If the package is configured with this option, it will be possible to run the test suites with the <code>test</code> command after the package is built.</p>
+</dd>
+<dt><code>--disable-tests</code></dt>
+<dd><p>(default) Do not build any test suites during the <code>build</code> stage. Do not check for dependencies required only by the test suites. It will not be possible to invoke the <code>test</code> command without reconfiguring the package.</p>
+</dd>
+<dt><code>--enable-coverage</code></dt>
+<dd><p>Build libraries and executables (including test suites) with Haskell Program Coverage enabled. Running the test suites will automatically generate coverage reports with HPC.</p>
+</dd>
+<dt><code>--disable-coverage</code></dt>
+<dd><p>(default) Do not enable Haskell Program Coverage.</p>
+</dd>
+</dl>
+<h3 id="miscellaneous-options">Miscellaneous options</h3>
+<dl>
+<dt><code>--user</code></dt>
+<dd><p>Does a per-user installation. This changes the <a href="#paths-in-the-simple-build-system">default installation prefix</a>. It also allow dependencies to be satisfied by the user’s package database, in addition to the global database. This also implies a default of <code>--user</code> for any subsequent <code>install</code> command, as packages registered in the global database should not depend on packages registered in a user’s database.</p>
+</dd>
+<dt><code>--global</code></dt>
+<dd><p>(default) Does a global installation. In this case package dependencies must be satisfied by the global package database. All packages in the user’s package database will be ignored. Typically the final installation step will require administrative privileges.</p>
+</dd>
+<dt><code>--package-db=</code><em>db</em></dt>
+<dd><p>Allows package dependencies to be satisfied from this additional package database <em>db</em> in addition to the global package database. All packages in the user’s package database will be ignored. The interpretation of <em>db</em> is implementation-specific. Typically it will be a file or directory. Not all implementations support arbitrary package databases.</p>
+</dd>
+<dt><code>--enable-optimization</code>[=<em>n</em>] or <code>-O</code>[<em>n</em>]</dt>
+<dd><p>(default) Build with optimization flags (if available). This is appropriate for production use, taking more time to build faster libraries and programs.</p>
+<p>The optional <em>n</em> value is the optimisation level. Some compilers support multiple optimisation levels. The range is 0 to 2. Level 0 is equivalent to <code>--disable-optimization</code>, level 1 is the default if no <em>n</em> parameter is given. Level 2 is higher optimisation if the compiler supports it. Level 2 is likely to lead to longer compile times and bigger generated code.</p>
+</dd>
+<dt><code>--disable-optimization</code></dt>
+<dd><p>Build without optimization. This is suited for development: building will be quicker, but the resulting library or programs will be slower.</p>
+</dd>
+<dt><code>--enable-library-profiling</code> or <code>-p</code></dt>
+<dd><p>Request that an additional version of the library with profiling features enabled be built and installed (only for implementations that support profiling).</p>
+</dd>
+<dt><code>--disable-library-profiling</code></dt>
+<dd><p>(default) Do not generate an additional profiling version of the library.</p>
+</dd>
+<dt><code>--enable-profiling</code></dt>
+<dd><p>Any executables generated should have profiling enabled (only for implementations that support profiling). For this to work, all libraries used by these executables must also have been built with profiling support. The library will be built with profiling enabled (if supported) unless <code>--disable-library-profiling</code> is specified.</p>
+</dd>
+<dt><code>--disable-profiling</code></dt>
+<dd><p>(default) Do not enable profiling in generated executables.</p>
+</dd>
+<dt><code>--enable-library-vanilla</code></dt>
+<dd><p>(default) Build ordinary libraries (as opposed to profiling libraries). This is independent of the <code>--enable-library-profiling</code> option. If you enable both, you get both.</p>
+</dd>
+<dt><code>--disable-library-vanilla</code></dt>
+<dd><p>Do not build ordinary libraries. This is useful in conjunction with <code>--enable-library-profiling</code> to build only profiling libraries, rather than profiling and ordinary libraries.</p>
+</dd>
+<dt><code>--enable-library-for-ghci</code></dt>
+<dd><p>(default) Build libraries suitable for use with GHCi.</p>
+</dd>
+<dt><code>--disable-library-for-ghci</code></dt>
+<dd><p>Not all platforms support GHCi and indeed on some platforms, trying to build GHCi libs fails. In such cases this flag can be used as a workaround.</p>
+</dd>
+<dt><code>--enable-split-objs</code></dt>
+<dd><p>Use the GHC <code>-split-objs</code> feature when building the library. This reduces the final size of the executables that use the library by allowing them to link with only the bits that they use rather than the entire library. The downside is that building the library takes longer and uses considerably more memory.</p>
+</dd>
+<dt><code>--disable-split-objs</code></dt>
+<dd><p>(default) Do not use the GHC <code>-split-objs</code> feature. This makes building the library quicker but the final executables that use the library will be larger.</p>
+</dd>
+<dt><code>--enable-executable-stripping</code></dt>
+<dd><p>(default) When installing binary executable programs, run the <code>strip</code> program on the binary. This can considerably reduce the size of the executable binary file. It does this by removing debugging information and symbols. While such extra information is useful for debugging C programs with traditional debuggers it is rarely helpful for debugging binaries produced by Haskell compilers.</p>
+<p>Not all Haskell implementations generate native binaries. For such implementations this option has no effect.</p>
+</dd>
+<dt><code>--disable-executable-stripping</code></dt>
+<dd><p>Do not strip binary executables during installation. You might want to use this option if you need to debug a program using gdb, for example if you want to debug the C parts of a program containing both Haskell and C code. Another reason is if your are building a package for a system which has a policy of managing the stripping itself (such as some Linux distributions).</p>
+</dd>
+<dt><code>--enable-shared</code></dt>
+<dd><p>Build shared library. This implies a separate compiler run to generate position independent code as required on most platforms.</p>
+</dd>
+<dt><code>--disable-shared</code></dt>
+<dd><p>(default) Do not build shared library.</p>
+</dd>
+<dt><code>--enable-executable-dynamic</code></dt>
+<dd><p>Link executables dynamically. The executable’s library dependencies should be built as shared objects. This implies <code>--enable-shared</code> unless <code>--disable-shared</code> is explicitly specified.</p>
+</dd>
+<dt><code>--disable-executable-dynamic</code></dt>
+<dd><p>(default) Link executables statically.</p>
+</dd>
+<dt><code>--configure-option=</code><em>str</em></dt>
+<dd><p>An extra option to an external <code>configure</code> script, if one is used (see the section on <a href="developing-packages.html#system-dependent-parameters">system-dependent parameters</a>). There can be several of these options.</p>
+</dd>
+<dt><code>--extra-include-dirs</code>[=<em>dir</em>]</dt>
+<dd><p>An extra directory to search for C header files. You can use this flag multiple times to get a list of directories.</p>
+<p>You might need to use this flag if you have standard system header files in a non-standard location that is not mentioned in the package’s <code>.cabal</code> file. Using this option has the same affect as appending the directory <em>dir</em> to the <code>include-dirs</code> field in each library and executable in the package’s <code>.cabal</code> file. The advantage of course is that you do not have to modify the package at all. These extra directories will be used while building the package and for libraries it is also saved in the package registration information and used when compiling modules that use the library.</p>
+</dd>
+<dt><code>--extra-lib-dirs</code>[=<em>dir</em>]</dt>
+<dd><p>An extra directory to search for system libraries files. You can use this flag multiple times to get a list of directories.</p>
+<p>You might need to use this flag if you have standard system libraries in a non-standard location that is not mentioned in the package’s <code>.cabal</code> file. Using this option has the same affect as appending the directory <em>dir</em> to the <code>extra-lib-dirs</code> field in each library and executable in the package’s <code>.cabal</code> file. The advantage of course is that you do not have to modify the package at all. These extra directories will be used while building the package and for libraries it is also saved in the package registration information and used when compiling modules that use the library.</p>
+</dd>
+<dt><code>--allow-newer</code>[=<em>pkgs</em>]</dt>
+<dd><p>Selectively relax upper bounds in dependencies without editing the package description.</p>
+<p>If you want to install a package A that depends on B &gt;= 1.0 &amp;&amp; &lt; 2.0, but you have the version 2.0 of B installed, you can compile A against B 2.0 by using <code>cabal install --allow-newer=B A</code>. This works for the whole package index: if A also depends on C that in turn depends on B &lt; 2.0, C’s dependency on B will be also relaxed.</p>
+<p>Example:</p>
+<pre><code>$ cd foo
+$ cabal configure
+Resolving dependencies...
+cabal: Could not resolve dependencies:
+[...]
+$ cabal configure --allow-newer
+Resolving dependencies...
+Configuring foo...</code></pre>
+<p>Additional examples:</p>
+<pre><code># Relax upper bounds in all dependencies.
+$ cabal install --allow-newer foo
+
+# Relax upper bounds only in dependencies on bar, baz and quux.
+$ cabal install --allow-newer=bar,baz,quux foo
+
+# Relax the upper bound on bar and force bar==2.1.
+$ cabal install --allow-newer=bar --constraint=&quot;bar==2.1&quot; foo</code></pre>
+<p>It’s also possible to enable <code>--allow-newer</code> permanently by setting <code>allow-newer: True</code> in the <code>~/.cabal/config</code> file.</p>
+</dd>
+<dt><code>--constraint=</code><em>constraint</em></dt>
+<dd><p>Restrict solutions involving a package to a given version range. For example, <code>cabal install --constraint=&quot;bar==2.1&quot;</code> will only consider install plans that do not use <code>bar</code> at all, or <code>bar</code> of version 2.1.</p>
+<p>As a special case, <code>cabal install --constraint=&quot;bar -none&quot;</code> prevents <code>bar</code> from being used at all (<code>-none</code> abbreviates <code>&gt; 1 &amp;&amp; &lt; 1</code>); <code>cabal install --constraint=&quot;bar installed&quot;</code> prevents reinstallation of the <code>bar</code> package; <code>cabal install --constraint=&quot;bar +foo -baz&quot;</code> specifies that the flag <code>foo</code> should be turned on and the <code>baz</code> flag should be turned off.</p>
+</dd>
+</dl>
+<h2 id="setup-build">setup build</h2>
+<p>Perform any preprocessing or compilation needed to make this package ready for installation.</p>
+<p>This command takes the following options:</p>
+<dl>
+<dt>–<em>prog</em>-options=<em>options</em>, –<em>prog</em>-option=<em>option</em></dt>
+<dd>These are mostly the same as the <a href="#setup-configure">options configure step</a>. Unlike the options specified at the configure step, any program options specified at the build step are not persistent but are used for that invocation only. They options specified at the build step are in addition not in replacement of any options specified at the configure step.
+</dd>
+</dl>
+<h2 id="setup-haddock">setup haddock</h2>
+<p>Build the documentation for the package using <a href="http://www.haskell.org/haddock/">haddock</a>. By default, only the documentation for the exposed modules is generated (but see the <code>--executables</code> and <code>--internal</code> flags below).</p>
+<p>This command takes the following options:</p>
+<dl>
+<dt><code>--hoogle</code></dt>
+<dd><p>Generate a file <code>dist/doc/html/</code><em>pkgid</em><code>.txt</code>, which can be converted by <a href="http://www.haskell.org/hoogle/">Hoogle</a> into a database for searching. This is equivalent to running <a href="http://www.haskell.org/haddock/">haddock</a> with the <code>--hoogle</code> flag.</p>
+</dd>
+<dt><code>--html-location=</code><em>url</em></dt>
+<dd><p>Specify a template for the location of HTML documentation for prerequisite packages. The substitutions (<a href="#paths-in-the-simple-build-system">see listing</a>) are applied to the template to obtain a location for each package, which will be used by hyperlinks in the generated documentation. For example, the following command generates links pointing at <a href="http://hackage.haskell.org/">Hackage</a> pages:</p>
+<blockquote>
+<p>setup haddock –html-location=‘http://hackage.haskell.org/packages/archive/$pkg/latest/doc/html’</p>
+</blockquote>
+<p>Here the argument is quoted to prevent substitution by the shell. If this option is omitted, the location for each package is obtained using the package tool (e.g. <code>ghc-pkg</code>).</p>
+</dd>
+<dt><code>--executables</code></dt>
+<dd><p>Also run <a href="http://www.haskell.org/haddock/">haddock</a> for the modules of all the executable programs. By default <a href="http://www.haskell.org/haddock/">haddock</a> is run only on the exported modules.</p>
+</dd>
+<dt><code>--internal</code></dt>
+<dd><p>Run <a href="http://www.haskell.org/haddock/">haddock</a> for the all modules, including unexposed ones, and make <a href="http://www.haskell.org/haddock/">haddock</a> generate documentation for unexported symbols as well.</p>
+</dd>
+<dt><code>--css=</code><em>path</em></dt>
+<dd><p>The argument <em>path</em> denotes a CSS file, which is passed to <a href="http://www.haskell.org/haddock/">haddock</a> and used to set the style of the generated documentation. This is only needed to override the default style that <a href="http://www.haskell.org/haddock/">haddock</a> uses.</p>
+</dd>
+<dt><code>--hyperlink-source</code></dt>
+<dd><p>Generate <a href="http://www.haskell.org/haddock/">haddock</a> documentation integrated with <a href="http://www.cs.york.ac.uk/fp/darcs/hscolour/">HsColour</a>. First, <a href="http://www.cs.york.ac.uk/fp/darcs/hscolour/">HsColour</a> is run to generate colourised code. Then <a href="http://www.haskell.org/haddock/">haddock</a> is run to generate HTML documentation. Each entity shown in the documentation is linked to its definition in the colourised code.</p>
+</dd>
+<dt><code>--hscolour-css=</code><em>path</em></dt>
+<dd><p>The argument <em>path</em> denotes a CSS file, which is passed to <a href="http://www.cs.york.ac.uk/fp/darcs/hscolour/">HsColour</a> as in</p>
+<blockquote>
+<p>runhaskell Setup.hs hscolour –css=<em>path</em></p>
+</blockquote>
+</dd>
+</dl>
+<h2 id="setup-hscolour">setup hscolour</h2>
+<p>Produce colourised code in HTML format using <a href="http://www.cs.york.ac.uk/fp/darcs/hscolour/">HsColour</a>. Colourised code for exported modules is put in <code>dist/doc/html/</code><em>pkgid</em><code>/src</code>.</p>
+<p>This command takes the following options:</p>
+<dl>
+<dt><code>--executables</code></dt>
+<dd><p>Also run <a href="http://www.cs.york.ac.uk/fp/darcs/hscolour/">HsColour</a> on the sources of all executable programs. Colourised code is put in <code>dist/doc/html/</code><em>pkgid</em>/<em>executable</em><code>/src</code>.</p>
+</dd>
+<dt><code>--css=</code><em>path</em></dt>
+<dd><p>Use the given CSS file for the generated HTML files. The CSS file defines the colours used to colourise code. Note that this copies the given CSS file to the directory with the generated HTML files (renamed to <code>hscolour.css</code>) rather than linking to it.</p>
+</dd>
+</dl>
+<h2 id="setup-install">setup install</h2>
+<p>Copy the files into the install locations and (for library packages) register the package with the compiler, i.e. make the modules it contains available to programs.</p>
+<p>The <a href="#installation-paths">install locations</a> are determined by options to <code>setup configure</code>.</p>
+<p>This command takes the following options:</p>
+<dl>
+<dt><code>--global</code></dt>
+<dd><p>Register this package in the system-wide database. (This is the default, unless the <code>--user</code> option was supplied to the <code>configure</code> command.)</p>
+</dd>
+<dt><code>--user</code></dt>
+<dd><p>Register this package in the user’s local package database. (This is the default if the <code>--user</code> option was supplied to the <code>configure</code> command.)</p>
+</dd>
+</dl>
+<h2 id="setup-copy">setup copy</h2>
+<p>Copy the files without registering them. This command is mainly of use to those creating binary packages.</p>
+<p>This command takes the following option:</p>
+<p><code>--destdir=</code><em>path</em></p>
+<p>Specify the directory under which to place installed files. If this is not given, then the root directory is assumed.</p>
+<h2 id="setup-register">setup register</h2>
+<p>Register this package with the compiler, i.e. make the modules it contains available to programs. This only makes sense for library packages. Note that the <code>install</code> command incorporates this action. The main use of this separate command is in the post-installation step for a binary package.</p>
+<p>This command takes the following options:</p>
+<dl>
+<dt><code>--global</code></dt>
+<dd><p>Register this package in the system-wide database. (This is the default.)</p>
+</dd>
+<dt><code>--user</code></dt>
+<dd><p>Register this package in the user’s local package database.</p>
+</dd>
+<dt><code>--gen-script</code></dt>
+<dd><p>Instead of registering the package, generate a script containing commands to perform the registration. On Unix, this file is called <code>register.sh</code>, on Windows, <code>register.bat</code>. This script might be included in a binary bundle, to be run after the bundle is unpacked on the target system.</p>
+</dd>
+<dt><code>--gen-pkg-config</code>[=<em>path</em>]</dt>
+<dd><p>Instead of registering the package, generate a package registration file. This only applies to compilers that support package registration files which at the moment is only GHC. The file should be used with the compiler’s mechanism for registering packages. This option is mainly intended for packaging systems. If possible use the <code>--gen-script</code> option instead since it is more portable across Haskell implementations. The <em>path</em> is optional and can be used to specify a particular output file to generate. Otherwise, by default the file is the package name and version with a <code>.conf</code> extension.</p>
+</dd>
+<dt><code>--inplace</code></dt>
+<dd><p>Registers the package for use directly from the build tree, without needing to install it. This can be useful for testing: there’s no need to install the package after modifying it, just recompile and test.</p>
+<p>This flag does not create a build-tree-local package database. It still registers the package in one of the user or global databases.</p>
+<p>However, there are some caveats. It only works with GHC (currently). It only works if your package doesn’t depend on having any supplemental files installed — plain Haskell libraries should be fine.</p>
+</dd>
+</dl>
+<h2 id="setup-unregister">setup unregister</h2>
+<p>Deregister this package with the compiler.</p>
+<p>This command takes the following options:</p>
+<dl>
+<dt><code>--global</code></dt>
+<dd><p>Deregister this package in the system-wide database. (This is the default.)</p>
+</dd>
+<dt><code>--user</code></dt>
+<dd><p>Deregister this package in the user’s local package database.</p>
+</dd>
+<dt><code>--gen-script</code></dt>
+<dd><p>Instead of deregistering the package, generate a script containing commands to perform the deregistration. On Unix, this file is called <code>unregister.sh</code>, on Windows, <code>unregister.bat</code>. This script might be included in a binary bundle, to be run on the target system.</p>
+</dd>
+</dl>
+<h2 id="setup-clean">setup clean</h2>
+<p>Remove any local files created during the <code>configure</code>, <code>build</code>, <code>haddock</code>, <code>register</code> or <code>unregister</code> steps, and also any files and directories listed in the <code>extra-tmp-files</code> field.</p>
+<p>This command takes the following options:</p>
+<dl>
+<dt><code>--save-configure</code> or <code>-s</code></dt>
+<dd>Keeps the configuration information so it is not necessary to run the configure step again before building.
+</dd>
+</dl>
+<h2 id="setup-test">setup test</h2>
+<p>Run the test suites specified in the package description file. Aside from the following flags, Cabal accepts the name of one or more test suites on the command line after <code>test</code>. When supplied, Cabal will run only the named test suites, otherwise, Cabal will run all test suites in the package.</p>
+<dl>
+<dt><code>--builddir=</code><em>dir</em></dt>
+<dd><p>The directory where Cabal puts generated build files (default: <code>dist</code>). Test logs will be located in the <code>test</code> subdirectory.</p>
+</dd>
+<dt><code>--human-log=</code><em>path</em></dt>
+<dd><p>The template used to name human-readable test logs; the path is relative to <code>dist/test</code>. By default, logs are named according to the template <code>$pkgid-$test-suite.log</code>, so that each test suite will be logged to its own human-readable log file. Template variables allowed are: <code>$pkgid</code>, <code>$compiler</code>, <code>$os</code>, <code>$arch</code>, <code>$abi</code>, <code>$abitag</code>, <code>$test-suite</code>, and <code>$result</code>.</p>
+</dd>
+<dt><code>--machine-log=</code><em>path</em></dt>
+<dd><p>The path to the machine-readable log, relative to <code>dist/test</code>. The default template is <code>$pkgid.log</code>. Template variables allowed are: <code>$pkgid</code>, <code>$compiler</code>, <code>$os</code>, <code>$arch</code>, <code>$abi</code>, <code>$abitag</code> and <code>$result</code>.</p>
+</dd>
+<dt><code>--show-details=</code><em>filter</em></dt>
+<dd><p>Determines if the results of individual test cases are shown on the terminal. May be <code>always</code> (always show), <code>never</code> (never show), <code>failures</code> (show only failed results), or <code>streaming</code> (show all results in real time).</p>
+</dd>
+<dt><code>--test-options=</code><em>options</em></dt>
+<dd><p>Give extra options to the test executables.</p>
+</dd>
+<dt><code>--test-option=</code><em>option</em></dt>
+<dd><p>give an extra option to the test executables. There is no need to quote options containing spaces because a single option is assumed, so options will not be split on spaces.</p>
+</dd>
+</dl>
+<h2 id="setup-sdist">setup sdist</h2>
+<p>Create a system- and compiler-independent source distribution in a file <em>package</em>-<em>version</em><code>.tar.gz</code> in the <code>dist</code> subdirectory, for distribution to package builders. When unpacked, the commands listed in this section will be available.</p>
+<p>The files placed in this distribution are the package description file, the setup script, the sources of the modules named in the package description file, and files named in the <code>license-file</code>, <code>main-is</code>, <code>c-sources</code>, <code>js-sources</code>, <code>data-files</code>, <code>extra-source-files</code> and <code>extra-doc-files</code> fields.</p>
+<p>This command takes the following option:</p>
+<dl>
+<dt><code>--snapshot</code></dt>
+<dd>Append today’s date (in “YYYYMMDD” format) to the version number for the generated source package. The original package is unaffected.
+</dd>
+</dl>
+</body>
+</html>

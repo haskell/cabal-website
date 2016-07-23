@@ -1,0 +1,4 @@
+AddCharset UTF-8 .html
+RedirectMatch Permanent ^/cabal/proposal(-1.0|-1.1|)/HIM2003Talk(.*) /cabal/old/HIM2003Talk$2
+RedirectMatch Permanent ^/cabal/DistUtils.tgz /cabal/old/DistUtils.tgz
+RedirectMatch Permanent ^/cabal/changelog /cabal/release/cabal-latest/changelog

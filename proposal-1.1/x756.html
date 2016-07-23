@@ -1,0 +1,200 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML
+><HEAD
+><TITLE
+>hmake</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.7"><LINK
+REL="HOME"
+TITLE="The Haskell Package System"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="Related Systems"
+HREF="a677.html"><LINK
+REL="PREVIOUS"
+TITLE="Make-Based Systems"
+HREF="x747.html"></HEAD
+><BODY
+CLASS="SECTION"
+BGCOLOR="#FFFFFF"
+TEXT="#000000"
+LINK="#0000FF"
+VLINK="#840084"
+ALINK="#0000FF"
+><DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="3"
+ALIGN="center"
+>The Haskell Package System</TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="bottom"
+><A
+HREF="x747.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="80%"
+ALIGN="center"
+VALIGN="bottom"
+>A. Related Systems</TD
+><TD
+WIDTH="10%"
+ALIGN="right"
+VALIGN="bottom"
+>&nbsp;</TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="SECTION"
+><H1
+CLASS="SECTION"
+><A
+NAME="LIP-APPENDIX-HMAKE"
+>A.7. <SPAN
+CLASS="APPLICATION"
+>hmake</SPAN
+></A
+></H1
+><P
+>From the <SPAN
+CLASS="APPLICATION"
+>hmake</SPAN
+> <A
+HREF="http://www.cs.york.ac.uk/fp/hmake/"
+TARGET="_top"
+>home page</A
+>,
+<SPAN
+CLASS="QUOTE"
+>"<SPAN
+CLASS="APPLICATION"
+>hmake</SPAN
+> is an intelligent compilation management tool for
+Haskell programs. It automatically extracts dependencies between
+source modules, and issues the appropriate compiler commands to
+rebuild only those that have changed, given just the name of the
+program or module that you want to build. Yes, you need never write a
+Makefile again!"</SPAN
+> <SPAN
+CLASS="APPLICATION"
+>hmake</SPAN
+> also does a good job of handling the
+variety of compilers that might be installed on a user's system.  It
+maintains a list of compilers and can switch between them according to
+a flag.  It also has a default compiler.</P
+><P
+><SPAN
+CLASS="APPLICATION"
+>hmake</SPAN
+> is particularly interesting to us because it is written
+in Haskell and handles the task of compiling Haskell tools quite well.
+One shortcoming is that it is not extensible on a per-project basis:
+it is difficult to add support for new preprocessors without editing
+the <SPAN
+CLASS="APPLICATION"
+>hmake</SPAN
+> code itself.  It does, however, perform a lot of the tasks
+that <CODE
+CLASS="CLASSNAME"
+>Distribution.Build</CODE
+> will ultimately have to perform, and we hope to reuse
+some of the code.</P
+><P
+>Another interesting feature of <SPAN
+CLASS="APPLICATION"
+>hmake</SPAN
+> is the
+<SPAN
+CLASS="APPLICATION"
+>Haskell Interactive</SPAN
+> tool (hi).  hi
+<SPAN
+CLASS="QUOTE"
+>"is, an interpreter-like environment that you can wrap over any
+common Haskell compiler to achieve an interactive development
+style."</SPAN
+> This is interesting because it would be nice to have a
+generic <TT
+CLASS="FILENAME"
+>/usr/bin/haskell</TT
+> which would use the
+default compiler to interpret Haskell scripts.</P
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="x747.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>Home</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>&nbsp;</TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>Make-Based Systems</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="a677.html"
+ACCESSKEY="U"
+>Up</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>&nbsp;</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>
