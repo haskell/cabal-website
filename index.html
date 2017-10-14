@@ -1,59 +1,21 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN">
-<html>
-<head>
-    <link href='nominolo.css' type='text/css' rel='stylesheet'>
-    <meta content='text/html; charset=UTF-8' http-equiv='Content-Type'>
-    <title>The Haskell Cabal</title>
-</head>
- 
-<body>
+---
+title: The Haskell Cabal
+---
 
-<p><img class="floatleft" src="images/Cabal-dark.png" width="300" height="103" alt="Cabal Logo" style="margin-bottom: 1em"></p>
+<h2>Comon Architecture for Building Applications and Libraries</h2>
 
-<h1>The Haskell Cabal</h1>
-<div class="subtitle">Common Architecture for Building Applications and Libraries</div>
+<p>
+Cabal is a system for building and packaging Haskell libraries and programs. It defines a common interface for package authors and distributors to easily build their applications in a portable way. Cabal is part of a larger infrastructure for distributing, organizing, and cataloging Haskell libraries and programs.
+</p>
+<p>
+Specifically, the Cabal describes what a Haskell package is, how these packages interact with the language, and what Haskell implementations must to do to support packages. The Cabal also specifies some infrastructure (code) that makes it easy for tool authors to build and distribute conforming packages.
+</p>
+<p>
+The Cabal is only one contribution to the larger goal. In particular, the Cabal says nothing about more global issues such as how authors decide where in the module name space their library should live; how users can find a package they want; how orphan packages find new owners; and so on. 
+</p>
+<p>I've reproduced a list of recent posts here for your reading pleasure:</p>
 
-<h2 style="clear: both">Quick Links</h2>
-<ul>
- <li><a class="highlight" href="http://haskell.org/haskellwiki/Cabal/How_to_install_a_Cabal_package">How to install a Cabal package</a>.
-<li><a class="highlight" href="http://hackage.haskell.org/">Hackage</a>: the Haskell Package Database.
- <li><a href="http://www.haskell.org/haskellwiki/How_to_write_a_Haskell_program">How to make a Cabal package</a>.
- <li><a href="http://haskell.org/haskellwiki/Upgrading_packages">Updating packages to work with recent Cabal and GHC versions</a>.
- <li>Documentation:
- <ul>
-  <li><a href="FAQ.html">FAQ</a></li>
-  <li><a href="users-guide/">User's Guide</a></li>
-  <li><a href="release/cabal-latest/doc/API/Cabal/">API</a></li>
- </ul>
- <li><a href="download.html">Download</a> (and documentation) for recent releases.
+<h2>Posts</h2>
+$partial("templates/post-list.html")$
 
- <li><a href="https://github.com/haskell/cabal/issues?labels=cabal-install&state=open">Browse open issues or report a new bug.</a>.
- <li><a href="code.html">Source code</a> for development versions.
- <li>Questions can be <a href="mailto:libraries@haskell.org">sent</a> to the <a href="http://www.haskell.org/mailman/listinfo/libraries">Haskell libraries mailing list</a>.
- <li>Development discussion takes place on the <a href="http://www.haskell.org/mailman/listinfo/cabal-devel">cabal-devel</a> mailing list.</li>
-</ul>
-
-<h2>Introduction</h2>
-
-<p>Cabal is a system for building and packaging Haskell libraries and programs.
-It defines a common interface for package authors and distributors to
-easily build their applications in a portable way. Cabal is part of a larger
-infrastructure for distributing, organizing, and cataloging Haskell libraries
-and programs.
-
-<p>Specifically, the Cabal describes what a Haskell package is, how these packages interact with the language, and what Haskell implementations must to do to support packages. The Cabal also specifies some infrastructure (code) that makes it easy for tool authors to build and distribute conforming packages.
-
-<p>The Cabal is only one contribution to the larger goal. In particular, the Cabal says nothing about more global issues such as how authors decide where in the module name space their library should live; how users can find a package they want; how orphan packages find new owners; and so on.
-
-<h2>Examples</h2>
-<p>Cabal itself is <a href="download.html">packaged with Cabal</a>. Many more examples can be found in <a href="http://hackage.haskell.org/packages/archive/pkg-list.html">Hackage</a>.
-
-<h2>Related Pages</h2>
-
-<ul>
-<li><a href="old.html">Old stuff</a>.</li>
-<li><a href="http://www.haskell.org/haskellwiki/Applications_and_libraries">Applications and Libraries</a> for Haskell.</li>
-</ul>
-
-</body>
-</html>
+<p>…or you can find more in the <a href="/archive.html">archives</a>.</p>
