@@ -1,6 +1,6 @@
 --------------------------------------------------------------------------------
 {-# LANGUAGE OverloadedStrings #-}
-import           Data.Monoid (mappend)
+import           Data.Foldable
 import           Hakyll
 
 
@@ -15,7 +15,7 @@ main = hakyll $ do
         route   idRoute
         compile compressCssCompiler
 
-    match (fromList ["contribute.rst"]) $ do
+    match (fromList ["download.md", "faq.md"]) $ do
         route   $ setExtension "html"
         compile $ pandocCompiler
             >>= loadAndApplyTemplate "templates/default.html" defaultContext
@@ -32,10 +32,12 @@ main = hakyll $ do
         route idRoute
         compile $ do
             posts <- recentFirst =<< loadAll "posts/*"
-            let archiveCtx =
-                    listField "posts" postCtx (return posts) `mappend`
-                    constField "title" "Archives"            `mappend`
-                    defaultContext
+            let
+                archiveCtx = fold
+                    [listField "posts" postCtx (return posts)
+                    ,constField "title" "Archives"
+                    ,defaultContext
+                    ]
 
             makeItem ""
                 >>= loadAndApplyTemplate "templates/blog.html" archiveCtx
@@ -47,9 +49,12 @@ main = hakyll $ do
         route idRoute
         compile $ do
             posts <- recentFirst =<< loadAll "posts/*"
-            let indexCtx =
-                    listField "posts" postCtx (return posts) `mappend`
-                    defaultContext
+            let
+                indexCtx = fold
+                    [listField "posts" postCtx (return posts)
+                    ,defaultContext
+                    ]
+
 
             getResourceBody
                 >>= applyAsTemplate indexCtx
@@ -61,6 +66,8 @@ main = hakyll $ do
 
 --------------------------------------------------------------------------------
 postCtx :: Context String
-postCtx =
-    dateField "date" "%B %e, %Y" `mappend`
-    defaultContext
+postCtx = fold
+    [dateField "date" "%B %e, %Y"
+    ,defaultContext
+    ]
+
