@@ -98,8 +98,8 @@ html {
 }
 
 /* Configure base font-size at main breakpoints */
-@media screen and (min-width: 30em) {html {font-size: 1.5em;}}
-@media screen and (min-width: 60em) {html {font-size: 2em;  }}
+@media screen and (min-width: 30em) { html { font-size: calc(1.2 * 1em); } }
+@media screen and (min-width: 60em) { html { font-size: calc(1.2 * 1.2 * 1em); } }
 
 .container {
   max-width: 30em;
