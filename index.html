@@ -1,59 +1,154 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN">
 <html>
-<head>
-    <link href='nominolo.css' type='text/css' rel='stylesheet'>
-    <meta content='text/html; charset=UTF-8' http-equiv='Content-Type'>
-    <title>The Haskell Cabal</title>
-</head>
- 
-<body>
+  <head>
+    <link href="nominolo.css" type="text/css" rel="stylesheet">
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type">
+    <title>The Haskell Cabal | Overview</title>
+  </head>
 
-<p><img class="floatleft" src="images/Cabal-dark.png" width="300" height="103" alt="Cabal Logo" style="margin-bottom: 1em"></p>
+  <body>
+    <h1 class="mainheader">The Haskell Cabal <span class="subheading">| Overview</span></h1>
+    <span style="font-style: italic">Cabal: Common Architecture for Building Applications and Libraries</span>
 
-<h1>The Haskell Cabal</h1>
-<div class="subtitle">Common Architecture for Building Applications and Libraries</div>
+    <h2>Introduction</h2>
 
-<h2 style="clear: both">Quick Links</h2>
-<ul>
- <li><a class="highlight" href="http://haskell.org/haskellwiki/Cabal/How_to_install_a_Cabal_package">How to install a Cabal package</a>.
-<li><a class="highlight" href="http://hackage.haskell.org/">Hackage</a>: the Haskell Package Database.
- <li><a href="http://www.haskell.org/haskellwiki/How_to_write_a_Haskell_program">How to make a Cabal package</a>.
- <li><a href="http://haskell.org/haskellwiki/Upgrading_packages">Updating packages to work with recent Cabal and GHC versions</a>.
- <li>Documentation:
- <ul>
-  <li><a href="FAQ.html">FAQ</a></li>
-  <li><a href="users-guide/">User's Guide</a></li>
-  <li><a href="release/cabal-latest/doc/API/Cabal/">API</a></li>
- </ul>
- <li><a href="download.html">Download</a> (and documentation) for recent releases.
+    <p>Cabal is a system for building and packaging Haskell libraries and programs.
+      It defines a common interface for package authors and distributors to
+      easily build their applications in a portable way. Cabal is part of a larger
+      infrastructure for distributing, organizing, and cataloging Haskell libraries
+      and programs.
+    </p>
 
- <li><a href="https://github.com/haskell/cabal/issues?labels=cabal-install&state=open">Browse open issues or report a new bug.</a>.
- <li><a href="code.html">Source code</a> for development versions.
- <li>Questions can be <a href="mailto:libraries@haskell.org">sent</a> to the <a href="http://www.haskell.org/mailman/listinfo/libraries">Haskell libraries mailing list</a>.
- <li>Development discussion takes place on the <a href="http://www.haskell.org/mailman/listinfo/cabal-devel">cabal-devel</a> mailing list.</li>
-</ul>
+    <p>The term <span style="font-style: italic">cabal</span> can refer to
+      either: <span style="font-style: italic">cabal-the-spec</span> (.cabal
+      files), <span style="font-style: italic">cabal-the-library</span> (code
+      that understands .cabal files), or <span style="font-style:
+						      italic">cabal-the-tool</span>
+      (the <span class="inline-code">cabal-install</span> package which provides
+      the <span class="inline-code">cabal</span> executable); usually folks are
+      referring to cabal-the-tool when they say cabal.
+    </p>
 
-<h2>Introduction</h2>
+    <h2><a href="#install-upgrade">Install/Upgrade <span class="inline-code">cabal</span></a></h2>
 
-<p>Cabal is a system for building and packaging Haskell libraries and programs.
-It defines a common interface for package authors and distributors to
-easily build their applications in a portable way. Cabal is part of a larger
-infrastructure for distributing, organizing, and cataloging Haskell libraries
-and programs.
+    <p>
+      To install the <span class="inline-code">cabal</span> executable you can
+      use <a href="https://github.com/haskell/ghcup">ghcup</a> (if you're using
+      Linux), the <a href="https://www.haskell.org/platform/">Haskell
+      Platform</a>, install the <span class="inline-code">cabal-install</span>
+      package from your distributions package manager (if using Linux or Mac),
+      or download the source or prebuilt binary from
+      the <a href="download.html">Download</a> page.
 
-<p>Specifically, the Cabal describes what a Haskell package is, how these packages interact with the language, and what Haskell implementations must to do to support packages. The Cabal also specifies some infrastructure (code) that makes it easy for tool authors to build and distribute conforming packages.
+    <p>
+      If you already have the <span class="inline-code">cabal</span> executable you can upgrade it by running:
+      <code>
+	<span class="code-unselectable"data-text="$ "></span>cabal install Cabal cabal-install
+      </code><br>
+    </p>
 
-<p>The Cabal is only one contribution to the larger goal. In particular, the Cabal says nothing about more global issues such as how authors decide where in the module name space their library should live; how users can find a package they want; how orphan packages find new owners; and so on.
+    <p>
+      If the above command failed for any reason see the <a href="#troubleshooting">Update Troubleshooting</a> section below.
+    </p>
 
-<h2>Examples</h2>
-<p>Cabal itself is <a href="download.html">packaged with Cabal</a>. Many more examples can be found in <a href="http://hackage.haskell.org/packages/archive/pkg-list.html">Hackage</a>.
+    <p>
+      Sometimes the older installed version is still on the program search
+      <span class="inline-code">$PATH</span>, you can check you're running the
+      latest version with the command below. If it doesn't match the output of
+      the <span class="inline-code">cabal-install</span> command above you'll
+      need to update it.<br>
 
-<h2>Related Pages</h2>
+      <code>
+	<span class="code-unselectable" data-text="$ ">cabal --version</span>
+      </code>
+    </p>
 
-<ul>
-<li><a href="old.html">Old stuff</a>.</li>
-<li><a href="http://www.haskell.org/haskellwiki/Applications_and_libraries">Applications and Libraries</a> for Haskell.</li>
-</ul>
+    <h2>Quick Start Guide</h2>
 
-</body>
+    <p>Start by installing the <span class="inline-code">cabal</span> executable (see <a href="#install-upgrade">the previous section</a>) and the Haskell compiler <span class="inline-code">ghc</span> (see <a href="https://www.haskell.org/ghc/download_ghc_8_4_4.html">the GHC download docs</a>).</p>
+
+    <h3>Starting a new project</h3>
+    <p>
+      <code>
+	<span class="code-unselectable"data-text="$ "></span>mkdir myproject && cd myproject<br/>
+	<span class="code-unselectable"data-text="$ "></span>cabal init -n --is-executable<br/>
+	<span class="code-unselectable"data-text="$ "></span>cabal v2-run<br/>
+      </code>
+    </p>
+
+    <p>
+      <ul>
+	<li>The <span class="inline-code">cabal init</span> command will create all the needed files to create an executable.</li>
+	<ul>
+	  <li><span class="inline-code">-n</span> non-interactive mode</li>
+	  <li><span class="inline-code">--is-executable</span> create a package containing an executable</li>
+	</ul>
+	<li>The <span class="inline-code">cabal v2-run</span> will run the executable in the project.</li>
+      </ul>
+    </p>
+
+    <p>You'll notice that the run command is prefixed
+    with <span class="inline-code">v2-</span>, this is because cabal is
+    transitioning to
+    a <a href="https://www.haskell.org/cabal/users-guide/nix-local-build-overview.html">new
+    build model</a> which makes a lot of things better. Eventually this will
+      become the default, but for now you need to ask for it specifically.
+    </p>
+
+
+    <h2>Documentation</h2>
+    <ul>
+      <li><a href="https://www.haskell.org/cabal/users-guide/developing-packages.html">Getting Started</a> - Your first package</li>
+      <li><a href="http://haskell.org/haskellwiki/Cabal/How_to_install_a_Cabal_package">How to install a Cabal package</a></li>
+      <li><a href="users-guide/">User's Guide</a> - Cabal feature walkthrough</li>
+      <li><a href="FAQ.html">FAQ and Troubleshooting</a> - commonly encountered issues and how to resolve them</li>
+      <li><a href="release/cabal-latest/doc/API/Cabal/">Cabal-the-library API documentation</a></li>
+    </ul>
+
+
+    <h2>Related Pages</h2>
+
+    <ul>
+      <li><a href="http://hackage.haskell.org/">Hackage</a>: the Haskell Package Database
+      <li><a href="http://haskell.org/haskellwiki/Upgrading_packages">Updating packages to work with recent Cabal and GHC versions</a>
+      <li><a href="https://github.com/haskell/cabal/issues?utf8=%E2%9C%93&q=is%3Aopen">Browse open issues or report a new bug</a>
+      <li><a href="code.html">Source code</a> for development versions.
+      <li>Questions can be <a href="mailto:libraries@haskell.org">sent</a> to the <a href="http://www.haskell.org/mailman/listinfo/libraries">Haskell libraries mailing list</a>
+      <li>Development discussion takes place on the <a href="http://www.haskell.org/mailman/listinfo/cabal-devel">cabal-devel</a> mailing list</li>
+      <li><a href="old.html">Old stuff</a></li>
+      <li><a href="http://www.haskell.org/haskellwiki/Applications_and_libraries">Applications and Libraries</a> for Haskell</li>
+    </ul>
+
+    <h2><a href="#troubleshooting">Update Troubleshooting</a></h2>
+
+    <p>
+      Before you try anything else, if you already have a new-ish version of cabal
+      you can use the v2/new commands. Try the following:
+
+      <code>
+	<span class="code-unselectable"data-text="$ "></span>cabal new-install Cabal cabal-install
+      </code><br/>
+
+      If this works update the <span class="inline-code">cabal</span> command on
+      your path with the version installed.
+    </p>
+
+    <p>
+      <b> ERROR: cabal: The following packages are likely to be broken by the reinstalls: ... </b><br/>
+      <b>Use --force-reinstalls if you want to install anyway.</b><br/>
+    </p>
+
+    <p>
+      This can happen if your package archive gets into a broken state. How to
+      fix this depends on the situation. Sometimes re-running the command with
+      <span class="inline-code">--force-reinstalls</span> works, other times you
+      have to remove your whole package archive and start over again.
+    </p>
+
+    <p>
+      Thankfully this doesn't happen very often, if you run into this issue ask
+      a question on StackOverflow.
+    </p>
+
+  </body>
 </html>
