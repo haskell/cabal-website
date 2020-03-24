@@ -71,30 +71,17 @@
     <p>
       <code>
 	<span class="code-unselectable"data-text="$ "></span>mkdir myproject && cd myproject<br/>
-	<span class="code-unselectable"data-text="$ "></span>cabal init -n --is-executable<br/>
-	<span class="code-unselectable"data-text="$ "></span>cabal v2-run<br/>
+	<span class="code-unselectable"data-text="$ "></span>cabal init<br/>
+	<span class="code-unselectable"data-text="$ "></span>cabal run<br/>
       </code>
     </p>
 
     <p>
       <ul>
-	<li>The <span class="inline-code">cabal init</span> command will create all the needed files to create an executable.</li>
-	<ul>
-	  <li><span class="inline-code">-n</span> non-interactive mode</li>
-	  <li><span class="inline-code">--is-executable</span> create a package containing an executable</li>
-	</ul>
-	<li>The <span class="inline-code">cabal v2-run</span> will run the executable in the project.</li>
+	<li>The <span class="inline-code">cabal init</span> command will create all the needed files for an executable.</li>
+	<li>The <span class="inline-code">cabal run</span> will build and run the executable in the project.</li>
       </ul>
     </p>
-
-    <p>You'll notice that the run command is prefixed
-    with <span class="inline-code">v2-</span>, this is because cabal is
-    transitioning to
-    a <a href="https://www.haskell.org/cabal/users-guide/nix-local-build-overview.html">new
-    build model</a> which makes a lot of things better. Eventually this will
-      become the default, but for now you need to ask for it specifically.
-    </p>
-
 
     <h2>Documentation</h2>
     <ul>
