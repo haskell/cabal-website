@@ -44,7 +44,7 @@
     <p>
       If you already have the <span class="inline-code">cabal</span> executable you can upgrade it by running:
       <code>
-	<span class="code-unselectable"data-text="$ "></span>cabal install Cabal cabal-install
+	<span class="code-unselectable"data-text="$ "></span>cabal install cabal-install
       </code><br>
     </p>
 
@@ -57,7 +57,7 @@
       <span class="inline-code">$PATH</span>, you can check you're running the
       latest version with the command below. If it doesn't match the output of
       the <span class="inline-code">cabal-install</span> command above you'll
-      need to update it.<br>
+      need to replace the old executable with the new one.<br>
 
       <code>
 	<span class="code-unselectable" data-text="$ ">cabal --version</span>
@@ -106,15 +106,27 @@
     <h2><a href="#troubleshooting">Update Troubleshooting</a></h2>
 
     <p>
-      Before you try anything else, if you already have a new-ish version of cabal
+      Before you try anything else, you may want to refresh the package index:
+
+      <code>
+	<span class="code-unselectable"data-text="$ "></span>cabal update
+      </code><br/>
+
+      If you already have a new-ish version of cabal
       you can use the v2/new commands. Try the following:
 
       <code>
 	<span class="code-unselectable"data-text="$ "></span>cabal new-install Cabal cabal-install
       </code><br/>
 
-      If this works update the <span class="inline-code">cabal</span> command on
-      your path with the version installed.
+      If this works, update the <span class="inline-code">cabal</span> command on
+      your <span class="inline-code">$PATH</span> with the version installed.
+      Some alternative installation methods from source code are described
+      in <a href="https://github.com/haskell/cabal/blob/master/README.md">the Cabal source repository</a>.
+    </p>
+
+    <p>
+      Particularly when upgrading from old versions, you may see:
     </p>
 
     <p>
@@ -130,8 +142,9 @@
     </p>
 
     <p>
-      Thankfully this doesn't happen very often, if you run into this issue ask
-      a question on StackOverflow.
+      Thankfully this doesn't happen very often. If you run into this issue and
+      you want to preserve your local package archive, ask a question, e.g.,
+      on StackOverflow.
     </p>
 
   </body>
