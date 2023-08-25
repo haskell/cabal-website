@@ -33,16 +33,14 @@
     <h2><a href="#install-upgrade">Install/Upgrade <span class="inline-code">cabal</span></a></h2>
 
     <p>
-      To install the <span class="inline-code">cabal</span> executable you can
-      use <a href="https://gitlab.haskell.org/haskell/ghcup-hs">ghcup</a> (if you're using
-      Linux), the <a href="https://www.haskell.org/platform/">Haskell
-      Platform</a>, install the <span class="inline-code">cabal-install</span>
-      package from your distributions package manager (if using Linux or Mac),
-      or download the source or prebuilt binary from
+      The recommended method to install the <span class="inline-code">cabal</span> executable is to use <a href="https://www.haskell.org/ghcup/">ghcup</a>, which can manage multiple versions of <span class="inline-code">cabal</span> on Linux, Mac and Windows.
+      Alternatively, you can install <span class="inline-code">cabal</span> using your distributions package manager (if you are using Linux or Mac), or download the source or prebuilt binary from
       the <a href="download.html">Download</a> page.
+    </p>
 
     <p>
-      If you already have the <span class="inline-code">cabal</span> executable you can upgrade it by running:
+      If you have installed <span class="inline-code">cabal</span> using <a href="https://www.haskell.org/ghcup/">ghcup</a>, then you can also upgrade it using <span class="inline-code">ghcup</span>.
+      If you installed the <span class="inline-code">cabal</span> executable using a different method, you can upgrade it by running:
       <code>
 	<span class="code-unselectable"data-text="$ "></span>cabal install cabal-install
       </code><br>
@@ -66,7 +64,9 @@
 
     <h2>Quick Start Guide</h2>
 
-    <p>Start by installing the <span class="inline-code">cabal</span> executable (see <a href="#install-upgrade">the previous section</a>) and the Haskell compiler <span class="inline-code">ghc</span> (see <a href="https://www.haskell.org/ghc/download.html">the GHC download docs</a>).</p>
+    <p>Start by installing the <span class="inline-code">cabal</span> executable (see <a href="#install-upgrade">the previous section</a>) and the Haskell compiler <span class="inline-code">ghc</span>.
+      It is also recommended to use <a href="https://www.haskell.org/ghcup/">ghcup</a> to install <span class="inline-code">ghc</span>.
+    </p>
 
     <h3>Starting a new project</h3>
     <p>
