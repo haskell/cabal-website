@@ -34,7 +34,7 @@
 
     <p>
       The recommended method to install the <span class="inline-code">cabal</span> executable is to use <a href="https://www.haskell.org/ghcup/">ghcup</a>, which can manage multiple versions of <span class="inline-code">cabal</span> on Linux, Mac and Windows.
-      Alternatively, you can install <span class="inline-code">cabal</span> using your distributions package manager (if you are using Linux or Mac), or download the source or prebuilt binary from
+      Alternatively, you can install <span class="inline-code">cabal</span> using your distribution's package manager (if you are using Linux or Mac), or download the source or prebuilt binary from
       the <a href="download.html">Download</a> page.
     </p>
 
@@ -44,22 +44,15 @@
       <code>
 	<span class="code-unselectable"data-text="$ "></span>cabal install cabal-install
       </code><br>
-    </p>
-
-    <p>
-      If the above command failed for any reason see the <a href="#troubleshooting">Update Troubleshooting</a> section below.
-    </p>
-
-    <p>
-      Sometimes the older installed version is still on the program search
-      <span class="inline-code">$PATH</span>, you can check you're running the
-      latest version with the command below. If it doesn't match the output of
-      the <span class="inline-code">cabal-install</span> command above you'll
-      need to replace the old executable with the new one.<br>
-
+      This will install the cabal executable in cabal's <span class="inline-code">installdir</span> (usually <span class="inline-code">~/.local/bin</span>). In order to use this executable, you have to make sure that this directory appears in the <span class="inline-code">$PATH</span> variable before the location where your current cabal executable is located.
+      You can check which version of the cabal executable you are running by executing the command below.
       <code>
-	<span class="code-unselectable" data-text="$ ">cabal --version</span>
+        <span class="code-unselectable" data-text="$ ">cabal --version</span>
       </code>
+    </p>
+
+    <p>
+      If the update failed for any reason, see the <a href="#troubleshooting">Update Troubleshooting</a> section below.
     </p>
 
     <h2>Quick Start Guide</h2>
