@@ -33,18 +33,25 @@
     <h2><a href="#install-upgrade">Install/Upgrade <span class="inline-code">cabal</span></a></h2>
 
     <p>
-      The recommended method to install the <span class="inline-code">cabal</span> executable is to use <a href="https://www.haskell.org/ghcup/">ghcup</a>, which can manage multiple versions of <span class="inline-code">cabal</span> on Linux, Mac and Windows.
-      Alternatively, you can install <span class="inline-code">cabal</span> using your distribution's package manager (if you are using Linux or Mac), or download the source or prebuilt binary from
-      the <a href="download.html">Download</a> page.
+      The recommended method to install the <span class="inline-code">cabal</span> executable
+      is to use <a href="https://www.haskell.org/ghcup/">ghcup</a>, which can manage multiple
+      versions of <span class="inline-code">cabal</span> on Linux, Mac and Windows.
+      Alternatively, you can install <span class="inline-code">cabal</span> using your
+      distribution's package manager (if you are using Linux or Mac), or download the source
+      or prebuilt binary from the <a href="download.html">Download</a> page.
     </p>
 
     <p>
-      If you have installed <span class="inline-code">cabal</span> using <a href="https://www.haskell.org/ghcup/">ghcup</a>, then you can also upgrade it using <span class="inline-code">ghcup</span>.
+      If you have installed <span class="inline-code">cabal</span> using <a href="https://www.haskell.org/ghcup/">ghcup</a>,
+      then you can also upgrade it using <span class="inline-code">ghcup</span>.
       If you installed the <span class="inline-code">cabal</span> executable using a different method, you can upgrade it by running:
       <code>
 	<span class="code-unselectable"data-text="$ "></span>cabal install cabal-install
       </code><br>
-      This will install the cabal executable in cabal's <span class="inline-code">installdir</span> (usually <span class="inline-code">~/.local/bin</span>). In order to use this executable, you have to make sure that this directory appears in the <span class="inline-code">$PATH</span> variable before the location where your current <span class="inline-code">cabal</span> executable is located.
+      This will install the cabal executable in cabal's <span class="inline-code">installdir</span>
+      (usually <span class="inline-code">~/.local/bin</span>). In order to use this executable,
+      you have to make sure that this directory appears in the <span class="inline-code">$PATH</span>
+      variable before the location where your current <span class="inline-code">cabal</span> executable is located.
       You can check which version of the <span class="inline-code">cabal</span> executable you are running by executing the command below.
       <code>
         <span class="code-unselectable" data-text="$ ">cabal --version</span>
@@ -57,7 +64,8 @@
 
     <h2>Quick Start Guide</h2>
 
-    <p>Start by installing the <span class="inline-code">cabal</span> executable (see <a href="#install-upgrade">the previous section</a>) and the Haskell compiler <span class="inline-code">ghc</span>.
+    <p>Start by installing the <span class="inline-code">cabal</span> executable
+      (see <a href="#install-upgrade">the previous section</a>) and the Haskell compiler <span class="inline-code">ghc</span>.
       It is also recommended to use <a href="https://www.haskell.org/ghcup/">ghcup</a> to install <span class="inline-code">ghc</span>.
     </p>
 
