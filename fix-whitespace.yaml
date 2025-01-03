@@ -5,9 +5,13 @@ excluded-dirs:
   - .vscode
   - proposal*
   - _site
+  - node_modules
+  - _site
+  - js
 
 included-files:
   - .gitignore
+  - "*.css"
   - "*.html"
   - "*.js"
   - "*.md"

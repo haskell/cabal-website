@@ -1,0 +1,157 @@
+// Cabal .rst docs use note and warning admonitions only. Add tip as a synonym for
+// info and note as a synonym for warning to match Bootstrap's alert classes.
+
+@use "sass:meta"
+
+@use "@fortawesome/fontawesome-free/scss/fontawesome.scss" as * with ($fa-font-path: "./fonts")
+@use "@fortawesome/fontawesome-free/scss/solid.scss" as * with ($fa-font-path: "./fonts")
+@use "@fortawesome/fontawesome-free/scss/brands.scss" as * with ($fa-font-path: "./fonts")
+@use "./pandoc-solarized.css" as *
+
+// Use @import to override variables.
+@import "colors.scss"
+@import "bootstrap/scss/bootstrap.scss"
+
+@include color-mode(dark)
+    #nav-side
+        background-image: linear-gradient(#303030, var(--bs-body-bg))
+        a
+            color: $headings-color-dark
+
+@include color-mode(light)
+    #nav-side
+        background-image: linear-gradient(#f1f1f1, var(--bs-body-bg))
+        a
+            color: $headings-color
+
+#content,
+#nav-side
+    padding-top: 0.5rem
+
+#nav-side
+    border: inherit
+    border-radius: 0
+    a.nav-link
+        font-size: 1.4rem
+        font-weight: 500
+        &:hover
+            text-decoration: underline
+
+#bd-theme
+    a.nav-link i
+        opacity: 0.2
+    a.nav-link.active i
+        opacity: 1
+
+.d-lg-block #content
+    @extend .col-9
+
+.d-lg-none #content
+    @extend .col-12
+
+pre:not(.sourceCode)
+    @extend .alert, .alert-light
+    font-size: 0.6rem
+
+// Bootstrap alerts with default colors are:
+//  - primary #cfe2ff
+//  - secondary #e2e3e5
+//  - success #d1e7dd
+//  - danger #f8d7da
+//  - warning #fff3cd
+//  - info #cff4fc
+//  - light #fcfcfd
+//  - dark #ced4da
+
+a.footnote-back
+    font-family: "Font Awesome 5 Free"
+
+#color-switch
+    font-family: "monospace"
+    cursor: pointer
+
+div.sourceCode
+    @extend .alert
+    padding-bottom: 0
+
+div.sourceCode
+    @extend .alert-light
+    font-size: 0.6rem
+
+div.success
+    @extend .alert, .alert-success
+    &:before
+        content: "✓"
+        background-color: var(--bs-success-bg-subtle)
+        border-color: var(--bs-success-border-subtle)
+    &:hover:before
+        content: "Success"
+
+div.danger
+    @extend .alert, .alert-danger
+    &:before
+        content: "✗"
+        background-color: var(--bs-danger-bg-subtle)
+        border-color: var(--bs-danger-border-subtle)
+    &:hover:before
+        content: "Danger"
+
+div.warning
+    @extend .alert, .alert-warning
+    &:before
+        content: "!"
+        background-color: var(--bs-warning-bg-subtle)
+        border-color: var(--bs-warning-border-subtle)
+    &:hover:before
+        content: "Warning"
+
+div.info
+    @extend .alert, .alert-info
+    &:before
+        content: "i"
+        background-color: var(--bs-info-bg-subtle)
+        border-color: var(--bs-info-border-subtle)
+    &:hover:before
+        content: "Info"
+
+div.note
+    @extend .warning, .alert-warning
+    &:before
+        content: "🗉"
+        background-color: var(--bs-warning-bg-subtle)
+        border-color: var(--bs-warning-border-subtle)
+    &:hover:before
+        content: "Note"
+
+div.tip
+    @extend .success, .alert-success
+    &:before
+        content: "🟓"
+        background-color: var(--bs-success-bg-subtle)
+        border-color: var(--bs-success-border-subtle)
+    &:hover:before
+        content: "Tip"
+
+div.danger,
+div.warning,
+div.note,
+div.tip
+    div.title > p
+        position: absolute
+        visibility: hidden
+
+div.success,
+div.danger,
+div.warning,
+div.info,
+div.note,
+div.tip
+    padding-bottom: 0
+    &:before
+        font-family: "monospace"
+        position: absolute
+        top: -0.8em
+        padding: 0.3em 1em
+        padding-bottom: 0
+        border-style: solid
+        border-width: 1px 1px 0 1px

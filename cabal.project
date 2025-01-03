@@ -1,0 +1,2 @@
+import: https://www.stackage.org/nightly-2024-06-22/cabal.config
+packages: .

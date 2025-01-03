@@ -1,0 +1,34 @@
+/* SEE: https://github.com/jez/tufte-pandoc-css */
+.sourceCode span.kw { color: #859900; font-weight: normal; font-style: normal; } /* Keyword */
+.sourceCode span.dt { color: #B58900; font-weight: normal; font-style: normal; } /* DataType */
+.sourceCode span.dv { color: #2AA198; font-weight: normal; font-style: normal; } /* DecVal */
+.sourceCode span.bn { color: #2AA198; font-weight: normal; font-style: normal; } /* BaseN */
+.sourceCode span.fl { color: #2AA198; font-weight: normal; font-style: normal; } /* Float */
+.sourceCode span.ch { color: #2AA198; font-weight: normal; font-style: normal; } /* Char */
+.sourceCode span.st { color: #2AA198; font-weight: normal; font-style: normal; } /* String */
+.sourceCode span.co { color: #93A1A1; font-weight: normal; font-style: italic; } /* Comment */
+.sourceCode span.ot { color: #268BD2; font-weight: normal; font-style: normal; } /* Other */
+.sourceCode span.al { color: #DC322F; font-weight: normal; font-style: normal; } /* Alert */
+.sourceCode span.fu { color: #268BD2; font-weight: normal; font-style: normal; } /* Function */
+.sourceCode span.er { color: #DC322F; font-weight: normal; font-style: normal; } /* Error */
+.sourceCode span.wa { color: #CB4B16; font-weight: normal; font-style: italic; } /* Warning */
+.sourceCode span.cn { color: #2AA198; font-weight: normal; font-style: normal; } /* Constant */
+.sourceCode span.sc { color: #DC322F; font-weight: normal; font-style: normal; } /* SpecialChar */
+.sourceCode span.vs { color: #657B83; font-weight: normal; font-style: normal; } /* VerbatimString */
+.sourceCode span.ss { color: #DC322F; font-weight: normal; font-style: normal; } /* SpecialString */
+.sourceCode span.im { color: #657B83; font-weight: normal; font-style: normal; } /* Import */
+.sourceCode span.va { color: #268BD2; font-weight: normal; font-style: normal; } /* Variable */
+.sourceCode span.cf { color: #859900; font-weight: normal; font-style: normal; } /* ControlFlow */
+.sourceCode span.op { color: #859900; font-weight: normal; font-style: normal; } /* Operator */
+.sourceCode span.bu { color: #657B83; font-weight: normal; font-style: normal; } /* BuiltIn */
+.sourceCode span.ex { color: #657B83; font-weight: normal; font-style: normal; } /* Extension */
+.sourceCode span.pp { color: #CB4B16; font-weight: normal; font-style: normal; } /* Preprocessor */
+.sourceCode span.at { color: #657B83; font-weight: normal; font-style: normal; } /* Attribute */
+.sourceCode span.do { color: #93A1A1; font-weight: normal; font-style: italic; } /* Documentation */
+.sourceCode span.an { color: #93A1A1; font-weight: normal; font-style: italic; } /* Annotation */
+.sourceCode span.cv { color: #93A1A1; font-weight: normal; font-style: italic; } /* CommentVar */
+.sourceCode span.in { color: #93A1A1; font-weight: normal; font-style: italic; } /* Information */
+
+/* Use red and green for diffs */
+.sourceCode.diff span.st { color: #DC322F }
+.sourceCode.diff span.va { color: #2AA198 }

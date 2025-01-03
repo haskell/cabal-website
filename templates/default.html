@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en" data-bs-theme="light">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    $partial("templates/meta.html")$
+    <title>$title$</title>
+    <script src="/js/bootstrap.min.js"></script>
+    <script src="/js/popper.min.js"></script>
+    <script src="/js/color-modes.js"></script>
+    <link rel="stylesheet" type="text/css" href="/css/app.css" />
+    $partial("templates/favicon.html")$
+  </head>
+
+  <body>
+    <div class="d-lg-none">
+      <div id="nav-top" class="d-print-none">
+        $partial("templates/nav-horiz.html")$
+      </div>
+      <div id="content" class="d-print-col-12">
+        $body$
+        <hr />
+        <footer>$partial("templates/footer.html")$</footer>
+      </div>
+    </div>
+    <div class="d-none d-lg-block">
+      <div class="fluid-container">
+        <div class="row">
+          <div id="nav-side" class="col-2 card d-print-none">
+            $partial("templates/nav-vert.html")$
+          </div>
+          <div id="content" class="d-print-col-12">
+            $body$
+            <hr />
+            <footer>$partial("templates/footer.html")$</footer>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

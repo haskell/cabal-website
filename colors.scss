@@ -1,0 +1,27 @@
+@use "sass:color";
+
+// Colors taken from the light and dark Cabal logos.
+$cabal-star: #2e5bc1;
+$cabal-top: #2d9bbd;
+$cabal-bottom: #4a4bcd;
+$cabal-background: #f1f1f1;
+
+$cabal-star-dark:#567dd9;
+$cabal-top-dark: #6bc9dd;
+$cabal-bottom-dark: #6a6bd7;
+$cabal-background-dark: #303030;
+
+$headings-color: $cabal-bottom;
+$headings-color-dark: $cabal-top-dark;
+
+$link-color: $cabal-star;
+$link-color-dark: $cabal-bottom-dark;
+
+$primary: $cabal-star;
+$info: $cabal-bottom-dark;
+
+$success: color.adjust(green, $lightness: -10%, $alpha: -0.2);
+$warning: color.adjust(yellow, $lightness: -10%, $alpha: -0.2);
+$danger: color.adjust(red, $lightness: -10%, $alpha: -0.2);
+
+$code-color: $danger;

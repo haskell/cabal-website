@@ -1,0 +1,10 @@
+proposal*/
+release-notes/
+old.html
+*.css
+*.js
+*.json
+*.rst
+*.scss
+*.yaml
+*.yml

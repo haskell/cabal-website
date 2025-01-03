@@ -1,0 +1,39 @@
+<section class="header">
+  <h2 class="display-4">Releases</h2>
+  <p class="lead">
+    The latest releases of the <samp>Cabal</samp>and <samp>cabal-install</samp>.
+  </p>
+</section>
+<hr />
+<section>
+  <h2>Tool Releases</h2>
+  Released versions of <samp>cabal-install</samp>, the package that includes the
+  build tool <code>cabal</code>:
+  <ul>
+    $for(exes)$
+    <li>
+      <a href="$url$">$title$</a>
+    </li>
+    $endfor$
+  </ul>
+
+  <h2>Library Releases</h2>
+  Released versions of <samp>Cabal</samp> the library package:
+  <ul>
+    $for(libs)$
+    <li>
+      <a href="$url$">$title$</a>
+    </li>
+    $endfor$
+  </ul>
+
+  <h2>Work in Progress</h2>
+  Upcoming releases, if any:
+  <ul>
+    $for(wips)$
+    <li>
+      <a href="$url$">$title$</a>
+    </li>
+    $endfor$
+  </ul>
+</section>

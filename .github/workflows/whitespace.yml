@@ -1,4 +1,4 @@
-name: Whitespace
+name: whitespace
 
 on:
   pull_request:

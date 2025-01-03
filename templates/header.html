@@ -1,0 +1,12 @@
+<section class="header">
+  <h2 class="display-4">$title$</h2>
+  $if(subtitle)$
+  <p class="lead">$subtitle$</p>
+  $endif$ $if(description)$
+  <p class="lead">$description$</p>
+  $endif$ $if(date)$
+  <p>
+    <em>Posted $date$ $if(author)$ by $author$ $endif$ </em>
+  </p>
+  $endif$
+</section>

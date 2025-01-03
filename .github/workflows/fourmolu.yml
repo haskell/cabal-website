@@ -1,0 +1,15 @@
+name: fourmolu
+
+on:
+  pull_request:
+  push:
+
+jobs:
+  fourmolu:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - uses: haskell-actions/run-fourmolu@v10
+      with:
+        version: "0.15.0.0"
+        pattern: site.hs
